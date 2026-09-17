@@ -7,7 +7,8 @@ version=$(/usr/libexec/PlistBuddy -c 'Print:CFBundleShortVersionString' Packagin
 app_name="${1:-SermonClip}"
 [[ "$app_name" =~ ^[A-Za-z0-9_-]+$ ]] || { echo "Invalid app output name" >&2; exit 1; }
 
-app_path="$(Packaging/build-app.sh "$app_name")"
+Packaging/build-app.sh "$app_name" >/dev/null
+app_path="$PWD/dist/$app_name.app"
 staging_root="$(mktemp -d)"
 trap 'rm -rf "$staging_root"' EXIT
 
