@@ -92,7 +92,8 @@ enum MediaExporter {
             } catch {
                 try Task.checkCancellation()
                 mode("Encoding video — passthrough could not preserve this timeline")
-                try await encode(clips: clips, destination: destination, size: outputSize, progress: progress)
+                try await encode(clips: clips, destination: destination, size: outputSize,
+                                 openingGain: openingGain, closingGain: closingGain, progress: progress)
                 return
             }
             // Move only after validation; never overwrite an existing user's export.
