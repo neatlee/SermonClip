@@ -80,11 +80,11 @@
   </main>
 
   <footer class="site-footer">
-    <span>© 2026 SermonClip</span>
+    <span>© <span data-current-year>2026</span> SermonClip</span>
     <span class="footer-links"><a href="privacy/">Privacy</a><a href="terms/">Terms</a><a href="CHANGELOG.md">Changelog</a><a href="https://github.com/stoneycreekbaptist/SermonClip">GitHub</a></span>
   </footer>
   <dialog class="lightbox" aria-label="Screenshot preview">
-    <button class="lightbox-close" type="button" aria-label="Close screenshot preview">Close</button>
+    <button class="lightbox-close" type="button" aria-label="Close screenshot preview"><span aria-hidden="true">×</span><span>CLOSE</span></button>
     <img src="" alt="">
   </dialog>
   <script>
@@ -117,6 +117,9 @@
     lightbox.querySelector('.lightbox-close').addEventListener('click', () => lightbox.close());
     lightbox.addEventListener('click', (event) => {
       if (event.target === lightbox) lightbox.close();
+    });
+    document.querySelectorAll('[data-current-year]').forEach((element) => {
+      element.textContent = new Date().getFullYear();
     });
   </script>
 </body>
