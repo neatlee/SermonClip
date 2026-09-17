@@ -61,5 +61,3 @@ See the [SermonClip Terms of Service](TERMS.md) for the terms governing use of t
 ## Releases
 
 Version history is maintained in [CHANGELOG.md](CHANGELOG.md). DMGs are published on the [GitHub Releases page](https://github.com/stoneycreekbaptist/SermonClip/releases).
-
-Developer-only build and testing notes are kept separately in [DEVELOPMENT-TESTING.md](DEVELOPMENT-TESTING.md).
