@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="SermonClip turns a full Sunday service recording into a clean, ready-to-publish sermon clip.">
+  <meta name="description" content="SermonClip extracts a sermon from a full Sunday service recording and exports the video, audio, and subtitles.">
   <meta name="theme-color" content="#f7f5f1">
-  <title>SermonClip — Sermon publishing, simplified</title>
+  <title>SermonClip — Sermon extraction from full service recordings</title>
   <link rel="icon" href="site-assets/favicon.png">
   <link rel="stylesheet" href="site.css">
 </head>
@@ -27,9 +27,9 @@
   <main>
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <p class="eyebrow">A calm, focused workflow for Sunday sermons</p>
-        <h1 id="hero-title">Turn your full Sunday service into a finished sermon.</h1>
-        <p class="lede">SermonClip takes your full Sunday service recording, trims it down to just the sermon, adds your church bumpers, prepares subtitles, and keeps the YouTube handoff in one simple macOS app.</p>
+        <p class="eyebrow">For full Sunday service recordings</p>
+        <h1 id="hero-title">Extract the sermon from your full service recording.</h1>
+        <p class="lede">SermonClip lets you choose the sermon boundaries, add opening and closing bumpers, prepare subtitles, and export the resulting video and audio files.</p>
         <div class="hero-actions" id="download">
           <a class="button button-primary" href="https://github.com/stoneycreekbaptist/SermonClip/releases/download/v1.1.0/SermonClip-1.1.0-arm64.dmg">Download for Apple Silicon</a>
           <a class="button button-secondary" href="https://github.com/stoneycreekbaptist/SermonClip/releases">View releases</a>
@@ -39,31 +39,31 @@
       <div class="hero-card" aria-label="SermonClip workflow">
         <div class="window-chrome"><span></span><span></span><span></span><b>SermonClip</b></div>
         <div class="workflow">
-          <div class="workflow-row"><strong>01</strong><span>Choose your bumpers</span><em>Ready</em></div>
-          <div class="workflow-row"><strong>02</strong><span>Set sermon boundaries</span><em>Trim</em></div>
-          <div class="workflow-row"><strong>03</strong><span>Align subtitles</span><em>Sync</em></div>
-          <div class="workflow-row active"><strong>04</strong><span>Export &amp; upload</span><em>Publish</em></div>
+          <div class="workflow-row"><strong>01</strong><span>Choose your bumpers</span><em>Bumpers</em></div>
+          <div class="workflow-row"><strong>02</strong><span>Set sermon boundaries</span><em>Boundaries</em></div>
+          <div class="workflow-row"><strong>03</strong><span>Align subtitles</span><em>Subtitles</em></div>
+          <div class="workflow-row active"><strong>04</strong><span>Export &amp; upload</span><em>Export</em></div>
         </div>
         <div class="progress"><span></span></div>
       </div>
     </section>
 
     <section class="section" id="features" aria-labelledby="features-title">
-      <div class="section-heading"><p class="eyebrow">Everything in one place</p><h2 id="features-title">Less fiddling. More finished sermons.</h2></div>
+      <div class="section-heading"><p class="eyebrow">What SermonClip does</p><h2 id="features-title">The steps from service recording to sermon export.</h2></div>
       <div class="feature-grid">
-        <article class="feature-card reveal"><span class="feature-number">01</span><h3>Keep just the sermon</h3><p>Start with the full Sunday service recording and use the waveform to mark precise sermon boundaries, leaving everything else behind.</p></article>
-        <article class="feature-card reveal"><span class="feature-number">02</span><h3>Subtitles that stay aligned</h3><p>Import an SRT or generate subtitles, preview them over the video, and adjust timing with practical breathing room.</p></article>
-        <article class="feature-card reveal"><span class="feature-number">03</span><h3>Ready for YouTube</h3><p>Export MP4, MP3, and SRT files—or send the completed video and captions to your connected YouTube channel.</p></article>
+        <article class="feature-card reveal"><span class="feature-number">01</span><h3>Select the sermon</h3><p>Start with the full Sunday service recording and use the waveform to set the beginning and end of the sermon.</p></article>
+        <article class="feature-card reveal"><span class="feature-number">02</span><h3>Prepare subtitles</h3><p>Import an SRT or generate subtitles, review them over the video, and adjust their timing when needed.</p></article>
+        <article class="feature-card reveal"><span class="feature-number">03</span><h3>Export the files</h3><p>Export MP4, MP3, and SRT files, or upload the finished MP4 and subtitle track to a connected YouTube channel.</p></article>
       </div>
     </section>
 
     <section class="split-section reveal">
-      <div><p class="eyebrow">Built for repeatable Sundays</p><h2>Your defaults, your bumpers, your rhythm.</h2></div>
-      <div class="split-copy"><p>Keep your opening and closing bumpers, description presets, thumbnails, and YouTube preferences ready for the next project. SermonClip remembers the work you do repeatedly so each export feels familiar.</p><a class="text-link" href="youtube-setup/">Read the YouTube setup guide <span aria-hidden="true">↗</span></a></div>
+      <div><p class="eyebrow">Project settings</p><h2>Save the settings you use for each project.</h2></div>
+      <div class="split-copy"><p>SermonClip stores your bumper library, description presets, thumbnails, and YouTube preferences locally so they are available the next time you open the app.</p><a class="text-link" href="youtube-setup/">Read the YouTube setup guide <span aria-hidden="true">↗</span></a></div>
     </section>
 
     <section class="download-panel reveal" aria-labelledby="download-title">
-      <div><p class="eyebrow">Current release</p><h2 id="download-title">SermonClip 1.1.0</h2><p>Public-ready configuration with user-provided Google OAuth setup and the latest bumper workflow.</p></div>
+      <div><p class="eyebrow">Latest release</p><h2 id="download-title">SermonClip 1.1.0</h2><p>Apple Silicon macOS application. Requires a user-provided Google OAuth configuration for YouTube features.</p></div>
       <a class="button button-primary" href="https://github.com/stoneycreekbaptist/SermonClip/releases/download/v1.1.0/SermonClip-1.1.0-arm64.dmg">Download DMG <span aria-hidden="true">↓</span></a>
     </section>
   </main>
