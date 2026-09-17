@@ -1,5 +1,13 @@
 # SermonClip
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="Sources/SermonCut/Resources/SermonClip-Darkmode-Logo.png">
+    <source media="(prefers-color-scheme: light)" srcset="Sources/SermonCut/Resources/SermonClip-Lightmode-Logo.png">
+    <img alt="SermonClip logo" src="Sources/SermonCut/Resources/SermonClip-Lightmode-Logo.png" width="240">
+  </picture>
+</p>
+
 SermonClip is a local-first macOS app for extracting a sermon from a full church-service recording, preparing subtitles, adding opening and closing bumpers, and exporting finished media.
 
 ## Requirements
