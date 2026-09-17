@@ -18,7 +18,7 @@
 
 ### 0.8.0 — Release preparation and internal defaults
 
-- Renamed the product from Pulpit to SermonClip throughout the app and storage paths.
+- Standardized the SermonClip product name throughout the app and storage paths.
 - Added the internal Stoney Creek default opening/closing bumper and protected it
   from deletion.
 - Embedded light/dark sidebar logos and the app icon into the application bundle.
@@ -102,7 +102,7 @@
 
 ### 0.1.0 — Prototype foundation
 
-- Established the initial SermonClip/Pulpit prototype and project structure.
+- Established the initial SermonClip prototype and project structure.
 - Proved the local-first workflow for a full service video, sermon selection,
   supplied subtitles, bumper insertion, and exported deliverables.
 - Established the Tahoe-only target, Apple Silicon baseline, and bundled media
