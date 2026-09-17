@@ -30,6 +30,7 @@ enum MediaExporter {
     /// Exact hard cuts, using passthrough video whenever the source and bumpers are compatible.
     static func exportVideo(sourceURL: URL, openingURL: URL?, closingURL: URL?,
                             openingMedia: BumperMedia = .video, closingMedia: BumperMedia = .video,
+                            openingGain: Double = 0, closingGain: Double = 0,
                             sermon: SermonRange, destination: URL,
                             progress: @escaping @Sendable (Double) -> Void = { _ in },
                             mode: @escaping @Sendable (String) -> Void = { _ in }) async throws {
@@ -77,7 +78,8 @@ enum MediaExporter {
                 var filters: [String] = []
                 for (index, clip) in clips.enumerated() {
                     arguments += ["-ss", String(clip.start), "-t", String(clip.duration), "-i", clip.url.path]
-                    filters.append(try await audioFilter(clip, input: index, label: "a\(index)"))
+                    let gain = index == 0 && openingURL != nil ? openingGain : (index == clips.count - 1 && closingURL != nil ? closingGain : 0)
+                    filters.append(try await audioFilter(clip, input: index, label: "a\(index)", gain: gain))
                 }
                 filters.append(clips.indices.map { "[a\($0)]" }.joined() + "concat=n=\(clips.count):v=0:a=1[a]")
                 let total = clips.reduce(0) { $0 + $1.duration }
@@ -98,7 +100,7 @@ enum MediaExporter {
             return
         }
         mode("Encoding video — \(plan.reason)")
-        try await encode(clips: clips, destination: destination, size: outputSize, progress: progress)
+        try await encode(clips: clips, destination: destination, size: outputSize, openingGain: openingGain, closingGain: closingGain, progress: progress)
     }
 
     private static func prepareBumper(_ url: URL, media: BumperMedia, duration: TimeInterval,
@@ -126,13 +128,16 @@ enum MediaExporter {
         return "scale=\(w):\(h):force_original_aspect_ratio=decrease,pad=\(w):\(h):(ow-iw)/2:(oh-ih)/2:color=black,setsar=1"
     }
 
-    private static func audioFilter(_ clip: ExportClip, input: Int, label: String) async throws -> String {
+    private static func audioFilter(_ clip: ExportClip, input: Int, label: String, gain: Double = 0) async throws -> String {
         let tracks = try await AVURLAsset(url: clip.url).loadTracks(withMediaType: .audio)
         if tracks.isEmpty { return "anullsrc=r=48000:cl=stereo,atrim=duration=\(clip.duration)[\(label)]" }
-        return "[\(input):a:0]asetpts=PTS-STARTPTS,aresample=48000,aformat=channel_layouts=stereo,apad,atrim=duration=\(clip.duration)[\(label)]"
+        let volume = gain < -0.01 ? ",volume=\(gain)dB" : ""
+        return "[\(input):a:0]asetpts=PTS-STARTPTS,aresample=48000,aformat=channel_layouts=stereo,apad,atrim=duration=\(clip.duration)\(volume)[\(label)]"
     }
 
-    private static func encode(clips: [ExportClip], destination: URL, size: CGSize, progress: @escaping @Sendable (Double) -> Void) async throws {
+    private static func encode(clips: [ExportClip], destination: URL, size: CGSize,
+                               openingGain: Double, closingGain: Double,
+                               progress: @escaping @Sendable (Double) -> Void) async throws {
         var arguments = ["-n"]
         var filters: [String] = []
         for (index, clip) in clips.enumerated() {
@@ -147,7 +152,8 @@ enum MediaExporter {
             filters.append("[\(index):v:0]setpts=PTS-STARTPTS,\(scaleFilter(size)),fps=30,format=yuv420p[v\(index)]")
             // Use the same gain-aware audio path for both passthrough and
             // full video encoding. Never drop bumper attenuation on fallback.
-            filters.append(try await audioFilter(clip, input: index, label: "a\(index)"))
+            let gain = index == 0 && clips.count > 1 ? openingGain : (index == clips.count - 1 && clips.count > 1 ? closingGain : 0)
+            filters.append(try await audioFilter(clip, input: index, label: "a\(index)", gain: gain))
         }
         let labels = clips.indices.map { "[v\($0)][a\($0)]" }.joined()
         filters.append("\(labels)concat=n=\(clips.count):v=1:a=1[v][a]")
@@ -158,7 +164,7 @@ enum MediaExporter {
         try await FFmpegRunner.run(arguments, duration: duration, progress: progress)
     }
 
-    static func exportMP3(from renderedVideo: URL, audioClips: [ExportClip]? = nil, destination: URL,
+    static func exportMP3(from renderedVideo: URL, audioClips: [ExportClip]? = nil, audioGains: [Double] = [], destination: URL,
                           progress: @escaping @Sendable (Double) -> Void = { _ in }) async throws {
         if let audioClips {
             let duration = audioClips.reduce(0) { $0 + $1.duration }
@@ -166,7 +172,7 @@ enum MediaExporter {
             var filters: [String] = []
             for (index, clip) in audioClips.enumerated() {
                 arguments += ["-ss", String(clip.start), "-t", String(clip.duration), "-i", clip.url.path]
-                filters.append(try await audioFilter(clip, input: index, label: "a\(index)"))
+                filters.append(try await audioFilter(clip, input: index, label: "a\(index)", gain: audioGains.indices.contains(index) ? audioGains[index] : 0))
             }
             filters.append(audioClips.indices.map { "[a\($0)]" }.joined() + "concat=n=\(audioClips.count):v=0:a=1[a]")
             arguments += ["-filter_complex", filters.joined(separator: ";"), "-map", "[a]", "-vn", "-c:a", "libmp3lame", "-b:a", "128k", destination.path]

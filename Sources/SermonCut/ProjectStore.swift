@@ -5,7 +5,13 @@ import SwiftUI
 @MainActor
 final class ProjectStore: ObservableObject {
     @Published var sourceURL: URL? {
-        didSet { if sourceURL != oldValue { bumperVideo.cancel() } }
+        didSet {
+            if sourceURL != oldValue {
+                bumperVideo.cancel()
+                audioAnalysisTask?.cancel()
+                bumperAttenuation = [:]
+            }
+        }
     }
     @Published var subtitleURL: URL?
     let exportNameDraft = ExportNameDraft()
@@ -23,6 +29,8 @@ final class ProjectStore: ObservableObject {
     @Published var sermonRange: SermonRange?
     @Published private(set) var boundariesConfirmed = false
     private let bumperVideo = BumperVideoOptimizer()
+    private var audioAnalysisTask: Task<Void, Never>?
+    private var bumperAttenuation: [UUID: Double] = [:]
 
     @Published var openingBumperID: UUID?
     @Published var closingBumperID: UUID?
@@ -218,6 +226,7 @@ final class ProjectStore: ObservableObject {
             sermonRange = SermonRange(start: 0, end: duration, confidence: 0,
                                       explanation: "Manual selection. Set the sermon start and end in the preview.")
             prepareBumperVideo()
+            prepareBumperAudio()
             report("Service loaded — \(format(sourceDuration)). Set the sermon boundaries in the preview.", in: .source, dismissAfterSeconds: 10)
         }
     }
@@ -265,6 +274,7 @@ final class ProjectStore: ObservableObject {
             bumpers.append(bumper)
             if kind == .opening { openingBumperID = bumper.id } else { closingBumperID = bumper.id }
             updateSelections()
+            prepareBumperAudio()
             report("Saved a permanent copy of \(bumper.name) in the bumper library.", in: .bumpers, dismissAfterSeconds: 10)
         } catch { report("Could not import bumper: \(error.localizedDescription)", in: .bumpers, tone: .error) }
     }
@@ -615,6 +625,8 @@ final class ProjectStore: ObservableObject {
         let timing = captionTiming
         let opening = selectedOpening
         let closing = selectedClosing
+        let openingGain = opening.map { bumperAttenuation[$0.id] ?? 0 } ?? 0
+        let closingGain = closing.map { bumperAttenuation[$0.id] ?? 0 } ?? 0
         let writeVideo = exportMP4
         let writeAudio = exportMP3
         isExporting = true
@@ -639,6 +651,7 @@ final class ProjectStore: ObservableObject {
                     try await MediaExporter.exportVideo(sourceURL: sourceURL, openingURL: preparedOpening ?? openingURL, closingURL: preparedClosing ?? closingURL,
                                                         openingMedia: preparedOpening != nil ? .video : opening?.media ?? .video,
                                                         closingMedia: preparedClosing != nil ? .video : closing?.media ?? .video,
+                                                        openingGain: openingGain, closingGain: closingGain,
                                                         sermon: sermonRange, destination: locations.video,
                                                         progress: { fraction in
                         Task { @MainActor [weak self] in self?.updateExportProgress(fraction, phase: 1) }
@@ -663,7 +676,11 @@ final class ProjectStore: ObservableObject {
                     if let closingURL, closing?.media == .video {
                         audioClips.append(ExportClip(url: closingURL, start: 0, duration: try await duration(of: closingURL)))
                     }
-                    try await MediaExporter.exportMP3(from: sourceURL, audioClips: audioClips, destination: locations.audio) { fraction in
+                    var audioGains: [Double] = []
+                    if openingURL != nil, opening?.media == .video { audioGains.append(openingGain) }
+                    audioGains.append(0)
+                    if closingURL != nil, closing?.media == .video { audioGains.append(closingGain) }
+                    try await MediaExporter.exportMP3(from: sourceURL, audioClips: audioClips, audioGains: audioGains, destination: locations.audio) { fraction in
                         Task { @MainActor [weak self] in self?.updateExportProgress(fraction, phase: audioPhase) }
                     }
                 }
@@ -707,6 +724,7 @@ final class ProjectStore: ObservableObject {
         range.explanation = "Boundary adjusted during review."
         sermonRange = range
         boundariesConfirmed = true
+        prepareBumperAudio()
     }
 
     func setEnd(_ seconds: TimeInterval) {
@@ -718,6 +736,7 @@ final class ProjectStore: ObservableObject {
         range.explanation = "Boundary adjusted during review."
         sermonRange = range
         boundariesConfirmed = true
+        prepareBumperAudio()
     }
 
     func updateSelections() {
@@ -725,6 +744,7 @@ final class ProjectStore: ObservableObject {
         preferences.lastClosingID = closingBumperID
         persist()
         prepareBumperVideo()
+        prepareBumperAudio()
     }
 
     private func prepareBumperVideo() {
@@ -734,6 +754,48 @@ final class ProjectStore: ObservableObject {
             return .init(url: url, media: bumper.media)
         }
         bumperVideo.prepare(source: sourceURL, jobs: jobs)
+    }
+
+    /// Analyze the selected sermon and bumper audio off the export path. A
+    /// missing or still-running analysis never blocks export; in that case the
+    /// original bumper level is preserved.
+    private func prepareBumperAudio() {
+        audioAnalysisTask?.cancel()
+        guard let sourceURL, let range = sermonRange, range.duration > 0 else { return }
+        let snapshot = bumpers
+        audioAnalysisTask = Task { @MainActor [weak self] in
+            guard let self else { return }
+            do {
+                let scopedSource = sourceURL.startAccessingSecurityScopedResource()
+                defer { if scopedSource { sourceURL.stopAccessingSecurityScopedResource() } }
+                guard let sermonLevel = try await BumperAudioAnalyzer.integratedLoudness(url: sourceURL,
+                                                                                           start: range.start,
+                                                                                           duration: range.duration) else { return }
+                var attenuation: [UUID: Double] = [:]
+                for bumper in snapshot where bumper.media == .video {
+                    try Task.checkCancellation()
+                    guard let url = try self.bumperURL(bumper) else { continue }
+                    var bumperLevel = bumper.audioLoudness
+                    if bumperLevel == nil {
+                        let scoped = url.startAccessingSecurityScopedResource()
+                        defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+                        bumperLevel = try await BumperAudioAnalyzer.integratedLoudness(url: url)
+                        if let bumperLevel, let index = self.bumpers.firstIndex(where: { $0.id == bumper.id }) {
+                            self.bumpers[index].audioLoudness = bumperLevel
+                            self.persist()
+                        }
+                    }
+                    if let bumperLevel {
+                        attenuation[bumper.id] = BumperAudioAnalyzer.attenuation(sermon: sermonLevel, bumper: bumperLevel)
+                    }
+                }
+                self.bumperAttenuation = attenuation
+            } catch is CancellationError {
+                // A changed source, bumper, or boundary starts a fresh pass.
+            } catch {
+                self.bumperAttenuation = [:]
+            }
+        }
     }
 
     func bumperURL(_ bumper: Bumper?) throws -> URL? {
@@ -746,7 +808,8 @@ final class ProjectStore: ObservableObject {
         var migrated = try BumperStorage().importCopy(from: url, kind: bumper.kind)
         // Preserve saved selections/defaults while upgrading old reference entries.
         migrated = Bumper(id: bumper.id, name: bumper.name, kind: bumper.kind, bookmark: Data(),
-                          createdAt: bumper.createdAt, managedFilename: migrated.managedFilename, media: bumper.media)
+                          createdAt: bumper.createdAt, managedFilename: migrated.managedFilename, media: bumper.media,
+                          audioLoudness: bumper.audioLoudness)
         if let index = bumpers.firstIndex(where: { $0.id == bumper.id }) { bumpers[index] = migrated; persist() }
         return BumperStorage().url(for: migrated)
     }

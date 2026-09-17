@@ -2,6 +2,16 @@
 
 ## Releases
 
+### 1.0.0 — Final internal release
+
+- Added delayed exact-track polling for YouTube subtitle uploads so temporary
+  processing delays do not produce false failure notices.
+- Added background sermon/bumper loudness analysis and cached attenuation for
+  bumper audio that is louder than the sermon. Quiet bumpers and sermon audio
+  are never amplified or changed.
+- Updated the bundled Stoney Creek opening and closing bumper with the latest
+  supplied `SCB-Bumper.mp4`.
+
 ### 0.9.0 — Initial internal release
 
 - Packaged the Stoney Creek internal Apple Silicon DMG for macOS Tahoe 26+.

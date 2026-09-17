@@ -71,6 +71,24 @@ final class YouTubeStore: ObservableObject {
         return try JSONDecoder().decode(CaptionList.self, from: data).items
     }
 
+    private func waitForCaptionTrack(videoID: String, expectedID: String?) async throws -> CaptionTrack? {
+        var latest: CaptionTrack?
+        for delay in [0.0, 1.0, 2.0, 4.0, 8.0, 12.0, 16.0] {
+            if delay > 0 { try await Task.sleep(for: .seconds(delay)) }
+            try Task.checkCancellation()
+            let tracks = try await captionTracks(videoID: videoID)
+            let match = tracks.first(where: { track in
+                if let expectedID { return track.id == expectedID }
+                return track.snippet.language == "en" && ["English", "English (SermonClip)"].contains(track.snippet.name)
+            })
+            if let match {
+                latest = match
+                if match.snippet.status == "serving", match.snippet.isDraft == false { return match }
+            }
+        }
+        return latest
+    }
+
     func checkSubtitles(videoID: String) {
         guard !checkingSubtitles, !busy, connection != nil else { return }
         let id = videoID.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -393,9 +411,11 @@ final class YouTubeStore: ObservableObject {
         guard let id = current.videoID else { throw YouTubeFailure(message: "Upload completion is not confirmed. Resume to query the existing session.") }
         completedVideoID = id
         var evidence: [String: Any] = ["videoID": id, "srtBytes": current.captionData?.count ?? 0]
+        var expectedCaptionTrackID: String?
         if let previous = defaults.dictionary(forKey: "SermonClip.lastSubtitleUploadEvidence"),
            previous["videoID"] as? String == id, let trackID = previous["trackID"] {
             evidence["trackID"] = trackID
+            expectedCaptionTrackID = trackID as? String
         }
         defaults.set(evidence, forKey: "SermonClip.lastSubtitleUploadEvidence")
         // Explicitly set the language after the resumable upload completes.
@@ -449,15 +469,13 @@ final class YouTubeStore: ObservableObject {
             guard !track.id.isEmpty, track.snippet.videoId == id, track.snippet.language == "en" else {
                 throw YouTubeFailure(message: "Google did not return the expected English subtitle track.")
             }
+            expectedCaptionTrackID = track.id
             evidence["trackID"] = track.id
             defaults.set(evidence, forKey: "SermonClip.lastSubtitleUploadEvidence")
             current.captionDone = true; try persist(current)
         }
         if current.captionData != nil {
-            let tracks = try await captionTracks(videoID: id)
-            guard let track = tracks.first(where: {
-                $0.snippet.language == "en" && ["English", "English (SermonClip)"].contains($0.snippet.name)
-            }) else {
+            guard let track = try await waitForCaptionTrack(videoID: id, expectedID: expectedCaptionTrackID) else {
                 throw YouTubeFailure(message: "The English subtitle upload was accepted, but YouTube does not list the track. The retry record has been retained.")
             }
             guard track.snippet.status == "serving", track.snippet.isDraft == false else {

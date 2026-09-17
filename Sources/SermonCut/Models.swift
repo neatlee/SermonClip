@@ -21,14 +21,18 @@ struct Bumper: Identifiable, Codable, Hashable {
     var managedFilename: String?
     var media: BumperMedia = .video
     var isBundled = false
+    /// Cached integrated loudness in LUFS. This is optional for compatibility
+    /// with libraries created before bumper loudness analysis was introduced.
+    var audioLoudness: Double?
 
     init(id: UUID, name: String, kind: BumperKind, bookmark: Data, createdAt: Date,
-         managedFilename: String?, media: BumperMedia = .video) {
+         managedFilename: String?, media: BumperMedia = .video, audioLoudness: Double? = nil) {
         self.id = id; self.name = name; self.kind = kind; self.bookmark = bookmark
         self.createdAt = createdAt; self.managedFilename = managedFilename; self.media = media
+        self.audioLoudness = audioLoudness
     }
 
-    private enum CodingKeys: String, CodingKey { case id, name, kind, bookmark, createdAt, managedFilename, media, isBundled }
+    private enum CodingKeys: String, CodingKey { case id, name, kind, bookmark, createdAt, managedFilename, media, isBundled, audioLoudness }
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         id = try values.decode(UUID.self, forKey: .id)
@@ -39,6 +43,7 @@ struct Bumper: Identifiable, Codable, Hashable {
         managedFilename = try values.decodeIfPresent(String.self, forKey: .managedFilename)
         media = try values.decodeIfPresent(BumperMedia.self, forKey: .media) ?? .video
         isBundled = try values.decodeIfPresent(Bool.self, forKey: .isBundled) ?? false
+        audioLoudness = try values.decodeIfPresent(Double.self, forKey: .audioLoudness)
     }
 }
 
