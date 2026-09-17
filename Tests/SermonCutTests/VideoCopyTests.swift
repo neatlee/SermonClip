@@ -122,7 +122,7 @@ final class VideoCopyTests: XCTestCase {
         }
     }
     func testNonKeyframeCutCopiesPacketsAndKeepsExactVisibleFrames() async throws {
-        let root = FileManager.default.temporaryDirectory.appending(path: "pulpit-copy-test-\(UUID())")
+        let root = FileManager.default.temporaryDirectory.appending(path: "sermonclip-copy-test-\(UUID())")
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: root) }
         let source = root.appending(path: "source.mp4"), result = root.appending(path: "result.mp4")
@@ -156,18 +156,13 @@ final class VideoCopyTests: XCTestCase {
     }
 
     func testCompatibleSilentBumpersKeepHardCutsAndFullDuration() async throws {
-        let root = FileManager.default.temporaryDirectory.appending(path: "pulpit-copy-bumpers-\(UUID())")
+        let root = FileManager.default.temporaryDirectory.appending(path: "sermonclip-copy-bumpers-\(UUID())")
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: root) }
         let source = root.appending(path: "source.mp4"), bumper = root.appending(path: "bumper.mp4"), final = root.appending(path: "final.mp4")
         let encoding = ["-c:v", "libx264", "-preset", "ultrafast", "-g", "60", "-bf", "2", "-threads", "2", "-pix_fmt", "yuv420p"]
         try await FFmpegRunner.run(["-n", "-f", "lavfi", "-i", "color=c=red:size=1920x1080:rate=30:duration=4", "-f", "lavfi", "-i", "sine=frequency=440:duration=4"] + encoding + ["-c:a", "aac", "-shortest", source.path])
         try await FFmpegRunner.run(["-n", "-f", "lavfi", "-i", "color=c=blue:size=1920x1080:rate=30:duration=2"] + encoding + [bumper.path])
-        for url in [source, bumper] {
-            let track = try await AVURLAsset(url: url).loadTracks(withMediaType: .video).first!
-            let format = try await track.load(.formatDescriptions).first!
-            print("TEST FORMAT", url.lastPathComponent, CMFormatDescriptionGetExtensions(format) as Any)
-        }
         let log = CopyModeLog()
         try await MediaExporter.exportVideo(sourceURL: source, openingURL: bumper, closingURL: bumper,
                                             sermon: .init(start: 1.2, end: 3.7, confidence: 1, explanation: "test"), destination: final, mode: { log.append($0) })

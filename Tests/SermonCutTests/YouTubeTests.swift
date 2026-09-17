@@ -133,7 +133,7 @@ final class YouTubeTests: XCTestCase {
     }
     @MainActor
     func testDescriptionPresetsPersistWithoutChangingUploadDraft() throws {
-        let name = "Pulpit.YouTubeTests.\(UUID())"
+        let name = "SermonClip.YouTubeTests.\(UUID())"
         let defaults = UserDefaults(suiteName: name)!
         defer { defaults.removePersistentDomain(forName: name) }
         let store = YouTubeStore(secrets: MemoryYouTubeSecrets(), defaults: defaults)
@@ -150,7 +150,7 @@ final class YouTubeTests: XCTestCase {
     }
     @MainActor
     func testInterruptedUploadResumesExistingSessionAndReportsPrivateRestriction() async throws {
-        let name = "Pulpit.YouTubeTests.\(UUID())"
+        let name = "SermonClip.YouTubeTests.\(UUID())"
         let defaults = UserDefaults(suiteName: name)!
         let root = FileManager.default.temporaryDirectory.appending(path: name)
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
@@ -204,7 +204,7 @@ final class YouTubeTests: XCTestCase {
 
     @MainActor
     func testThumbnailFailureRetriesOnlyThumbnailForExistingVideo() async throws {
-        let name = "Pulpit.YouTubeTests.\(UUID())"
+        let name = "SermonClip.YouTubeTests.\(UUID())"
         let defaults = UserDefaults(suiteName: name)!
         let root = FileManager.default.temporaryDirectory.appending(path: name)
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
@@ -243,7 +243,7 @@ final class YouTubeTests: XCTestCase {
 
     @MainActor
     func testExistingVideoIsAddedToSelectedPlaylistWithoutReuploading() async throws {
-        let name = "Pulpit.YouTubeTests.\(UUID())"
+        let name = "SermonClip.YouTubeTests.\(UUID())"
         let defaults = UserDefaults(suiteName: name)!
         let root = FileManager.default.temporaryDirectory.appending(path: name)
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)

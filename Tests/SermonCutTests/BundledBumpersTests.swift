@@ -72,6 +72,40 @@ final class BundledBumpersTests: XCTestCase {
         try storage.deleteCopy(of: updated[2])
     }
 
+    func testChangedBundledSourceReplacesProtectedCopiesPreservingIdentity() throws {
+        let suite = "SermonClip.Tests." + UUID().uuidString
+        let defaults = UserDefaults(suiteName: suite)!
+        let root = FileManager.default.temporaryDirectory.appending(path: suite)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer {
+            defaults.removePersistentDomain(forName: suite)
+            try? FileManager.default.removeItem(at: root)
+        }
+        let source = root.appending(path: "SCB-Bumper.mp4")
+        let oldBytes = Data("old bundled bumper".utf8)
+        let newBytes = Data("new bundled bumper with a fade".utf8)
+        try oldBytes.write(to: source)
+        let storage = BumperStorage(root: root.appending(path: "library"))
+        try BundledBumpers.installIfNeeded(source: source, defaults: defaults, storage: storage,
+                                           bumperKey: "bumpers", preferencesKey: "preferences")
+        var bumpers = try JSONDecoder().decode([Bumper].self, from: XCTUnwrap(defaults.data(forKey: "bumpers")))
+        let originalIDs = bumpers.map(\.id)
+        var preferences = try JSONDecoder().decode(AppPreferences.self, from: XCTUnwrap(defaults.data(forKey: "preferences")))
+        preferences.startupBumperMode = .lastUsed
+        defaults.set(try JSONEncoder().encode(preferences), forKey: "preferences")
+        try newBytes.write(to: source)
+        try BundledBumpers.installIfNeeded(source: source, defaults: defaults, storage: storage,
+                                           bumperKey: "bumpers", preferencesKey: "preferences")
+        bumpers = try JSONDecoder().decode([Bumper].self, from: XCTUnwrap(defaults.data(forKey: "bumpers")))
+        XCTAssertEqual(bumpers.map(\.id), originalIDs)
+        XCTAssertTrue(bumpers.allSatisfy(\.isBundled))
+        for bumper in bumpers {
+            XCTAssertEqual(try Data(contentsOf: XCTUnwrap(storage.url(for: bumper))), newBytes)
+        }
+        let restoredPreferences = try JSONDecoder().decode(AppPreferences.self, from: XCTUnwrap(defaults.data(forKey: "preferences")))
+        XCTAssertEqual(restoredPreferences.startupBumperMode, .lastUsed)
+    }
+
     func testExistingLibraryAndPreferencesArePreserved() throws {
         let suite = "SermonClip.Tests." + UUID().uuidString
         let defaults = UserDefaults(suiteName: suite)!

@@ -128,7 +128,6 @@ final class YouTubeStore: ObservableObject {
     private let defaults: UserDefaults
     private let session: URLSession
     private let presetKey = "SermonClip.descriptionPresets.v1"
-    private let legacyPresetKey = "Pulpit.descriptionPresets.v1"
 
     init(secrets: any YouTubeSecretStorage = YouTubeKeychain(), defaults: UserDefaults = .standard, session: URLSession? = nil) {
         self.secrets = secrets; self.defaults = defaults
@@ -165,7 +164,7 @@ final class YouTubeStore: ObservableObject {
             configured = configuration != nil
             report(job != nil ? "An unfinished upload is saved. Resume it when ready." : bundledConfigurationWasUpdated ? "Built-in Google configuration updated. Reconnect your YouTube channel." : connection != nil ? "YouTube connected." : configured ? "Configuration imported. Connect your channel." : status, in: .account, tone: job != nil ? .warning : .normal)
         } catch { report(error.localizedDescription, in: .account, tone: .error) }
-        presets = loadPresetsWithMigration()
+        presets = loadPresets()
         if job != nil { report("An unfinished upload is saved. Resume it when ready.", in: .upload, tone: .warning) }
     }
 
@@ -175,22 +174,12 @@ final class YouTubeStore: ObservableObject {
     }
     private func save<T: Encodable>(_ value: T, _ key: String) throws { try secrets.write(JSONEncoder().encode(value), key: key) }
 
-    private func loadPresetsWithMigration() -> [DescriptionPreset] {
+    private func loadPresets() -> [DescriptionPreset] {
         if let data = defaults.data(forKey: presetKey),
            let decoded = try? JSONDecoder().decode([DescriptionPreset].self, from: data) {
             return decoded
         }
-        // The bundle identifier changed from local.pulpit.development to
-        // local.sermonclip.development. Migrate only the user's standard domain;
-        // injected test stores must remain isolated from the real account.
-        guard defaults === UserDefaults.standard,
-              let legacyDefaults = UserDefaults(suiteName: "local.pulpit.development"),
-              let data = legacyDefaults.data(forKey: legacyPresetKey),
-              let decoded = try? JSONDecoder().decode([DescriptionPreset].self, from: data) else {
-            return []
-        }
-        defaults.set(data, forKey: presetKey)
-        return decoded
+        return []
     }
 
     func importConfiguration(_ url: URL) {

@@ -132,8 +132,7 @@ protocol YouTubeSecretStorage {
 }
 
 struct YouTubeKeychain: YouTubeSecretStorage {
-    // Keep this stable across app renames to preserve saved sign-in and upload jobs.
-    private let service = "local.pulpit.youtube"
+    private let service = "local.sermonclip.youtube"
     func read(_ key: String) throws -> Data? {
         let cache = cacheKey(key)
         if let value = YouTubeKeychainCache.value(for: cache) { return value }

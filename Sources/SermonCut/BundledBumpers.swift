@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 
 enum BundledBumpers {
@@ -9,6 +10,7 @@ enum BundledBumpers {
                                 bumperKey: String, preferencesKey: String) throws {
         guard let source else { return }
         try protectExistingCopies(source: source, defaults: defaults, storage: storage, bumperKey: bumperKey)
+        try updateBundledCopies(source: source, defaults: defaults, storage: storage, bumperKey: bumperKey)
         guard !defaults.bool(forKey: installedKey) else { return }
         guard defaults.object(forKey: bumperKey) == nil,
               defaults.object(forKey: preferencesKey) == nil else {
@@ -67,5 +69,31 @@ enum BundledBumpers {
             }
         }
         if changed { defaults.set(try JSONEncoder().encode(bumpers), forKey: bumperKey) }
+    }
+
+    /// Replace protected bundled media when a new app ships a changed asset.
+    /// The managed filename, bumper ID, defaults, and user selections remain
+    /// unchanged; user-added bumpers are never considered for replacement.
+    private static func updateBundledCopies(source: URL, defaults: UserDefaults, storage: BumperStorage,
+                                            bumperKey: String) throws {
+        guard let data = defaults.data(forKey: bumperKey),
+              FileManager.default.fileExists(atPath: source.path) else { return }
+        let bumpers = try JSONDecoder().decode([Bumper].self, from: data)
+        let sourceHash = try sha256(of: source)
+        var changed = false
+        for bumper in bumpers where bumper.isBundled && bumper.media == .video {
+            guard let destination = storage.url(for: bumper),
+                  FileManager.default.fileExists(atPath: destination.path) else { continue }
+            guard try sha256(of: destination) != sourceHash else { continue }
+            try Data(contentsOf: source, options: .mappedIfSafe).write(to: destination, options: .atomic)
+            changed = true
+        }
+        if changed {
+            defaults.set(try JSONEncoder().encode(bumpers), forKey: bumperKey)
+        }
+    }
+
+    private static func sha256(of url: URL) throws -> Data {
+        Data(SHA256.hash(data: try Data(contentsOf: url, options: .mappedIfSafe)))
     }
 }

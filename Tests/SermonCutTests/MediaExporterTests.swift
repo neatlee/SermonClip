@@ -5,7 +5,7 @@ import XCTest
 
 final class MediaExporterTests: XCTestCase {
     func testBothBumpersWithSilentLogo() async throws {
-        let root = FileManager.default.temporaryDirectory.appending(path: "pulpit-bumper-test-" + UUID().uuidString)
+        let root = FileManager.default.temporaryDirectory.appending(path: "sermonclip-bumper-test-" + UUID().uuidString)
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: root) }
         let bumper = root.appending(path: "bumper.mp4")
@@ -36,7 +36,7 @@ final class MediaExporterTests: XCTestCase {
         guard FileManager.default.fileExists(atPath: source.path) else {
             throw XCTSkip("Representative source media is not present.")
         }
-        let destination = URL(fileURLWithPath: "/private/tmp/pulpit-export-smoke-\(UUID().uuidString).mp4")
+        let destination = URL(fileURLWithPath: "/private/tmp/sermonclip-export-smoke-\(UUID().uuidString).mp4")
         let mp3Destination = destination.deletingPathExtension().appendingPathExtension("mp3")
         let range = SermonRange(start: 60, end: 66, confidence: 1, explanation: "Test")
         try await MediaExporter.exportVideo(sourceURL: source, openingURL: nil, closingURL: nil, sermon: range, destination: destination)

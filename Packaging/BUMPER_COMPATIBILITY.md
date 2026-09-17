@@ -1,7 +1,9 @@
 # Bumper-only conversion investigation (2026-09-16)
 
-Audio normalization was removed at the user's request to prioritize export time.
-There are no runtime loudness scans or automatic gain adjustments. `BumperAudioTests`
+Bumper conversion remains video-only: it preserves the bumper's original audio
+when creating a reusable compatible variant. During export, SermonClip may apply
+cached attenuation to a bumper that is louder than the selected sermon. Sermon
+audio is never changed, and quiet bumpers are never amplified. `BumperAudioTests`
 verifies original bumper and sermon levels in both video paths and MP3 exports,
 plus compatibility with library entries containing legacy audio-analysis metadata.
 
