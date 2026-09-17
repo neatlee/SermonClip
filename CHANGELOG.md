@@ -13,6 +13,7 @@
 - Removed the unnecessary Google Account connections link.
 - Added private GitHub release packaging, version metadata, and a reproducible
   DMG build script.
+- Added the DMG Applications-folder shortcut and drag-to-install layout.
 
 ## Retrospective development milestones (prior to GitHub)
 
@@ -26,7 +27,6 @@
 - Added export-folder opening from the successful export notice.
 - Added MP4-only, MP3-only, and combined export selection.
 - Made MP4 automatically required when YouTube upload is enabled.
-- Added internal DMG packaging with an Applications shortcut.
 
 ### 0.7.0 — Export performance and media compatibility
 
