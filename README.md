@@ -56,6 +56,8 @@ The Stoney Creek internal release includes its Google OAuth configuration. YouTu
 
 See the [SermonClip Privacy Policy](PRIVACY.md) for a plain-language explanation of local storage, Google/YouTube access, and uploads.
 
+See the [SermonClip Terms of Service](TERMS.md) for the terms governing use of the app.
+
 ## Releases
 
 Version history is maintained in [CHANGELOG.md](CHANGELOG.md). Internal DMGs are published as private GitHub Releases.
