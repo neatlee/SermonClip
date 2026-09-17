@@ -7,8 +7,6 @@ SermonClip is a local-first macOS app for extracting a sermon from a full church
 - Apple Silicon Mac
 - macOS Tahoe 26 or later
 
-Xcode, Swift, Homebrew, and other developer tools are **not** required to run a packaged release.
-
 ## Installing SermonClip
 
 1. Download the latest DMG from the private GitHub Releases page.
