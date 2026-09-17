@@ -6,6 +6,14 @@ path_id="$(printf '%s' "$PWD" | shasum -a 256 | cut -c1-16)"
 scratch_path="$PWD/.build-app/$path_id"
 swift build -c release --scratch-path "$scratch_path"
 build_dir="$(swift build -c release --scratch-path "$scratch_path" --show-bin-path)"
+resource_bundle="$build_dir/SermonCut_SermonCut.bundle"
+if [[ ! -f "$resource_bundle/Resources/Tools/ffmpeg" ]]; then
+  resource_bundle="$(find "$scratch_path" -type f -path '*/release/SermonCut_SermonCut.bundle/Resources/Tools/ffmpeg' -print -quit | sed 's#/Resources/Tools/ffmpeg$##')"
+fi
+[[ -n "$resource_bundle" && -f "$resource_bundle/Resources/Tools/ffmpeg" ]] || {
+  echo "The release resource bundle or bundled encoder is missing." >&2
+  exit 1
+}
 app_name="${1:-SermonClip}"
 [[ "$app_name" =~ ^[A-Za-z0-9_-]+$ ]] || { echo "Invalid app output name" >&2; exit 1; }
 app_dir="$PWD/dist/$app_name.app"
@@ -13,7 +21,7 @@ rm -rf "$app_dir"
 mkdir -p "$app_dir/Contents/MacOS" "$app_dir/Contents/Resources"
 cp "$build_dir/SermonCut" "$app_dir/Contents/MacOS/SermonCut"
 cp Packaging/Info.plist "$app_dir/Contents/Info.plist"
-ditto "$build_dir/SermonCut_SermonCut.bundle" "$app_dir/Contents/Resources/SermonCut_SermonCut.bundle"
+ditto "$resource_bundle" "$app_dir/Contents/Resources/SermonCut_SermonCut.bundle"
 cp THIRD_PARTY_NOTICES.md "$app_dir/Contents/Resources/THIRD_PARTY_NOTICES.md"
 # Internal church defaults are copied into the application itself. Neither
 # TestMedia nor the project checkout is needed by the installed app.
