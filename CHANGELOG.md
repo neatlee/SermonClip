@@ -1,11 +1,13 @@
 # SermonClip Changelog
 
-This is a retrospective development timeline reconstructed from the local
-SermonClip builds and project work. The intermediate versions below are
-milestones, not historical GitHub releases. The first published internal
-GitHub release is `0.9.0`.
+The `0.9.0` entry below is an actual published private GitHub Release for the
+internal Stoney Creek team. Earlier entries are a retrospective development
+timeline reconstructed from the local SermonClip builds and project work; those
+intermediate versions were milestones, not historical GitHub releases.
 
-## 0.9.0 — Initial internal release
+## Published releases
+
+### 0.9.0 — Initial internal release
 
 - Packaged the Stoney Creek internal Apple Silicon DMG for macOS Tahoe 26+.
 - Included the bundled Stoney Creek Google OAuth configuration and default bumper.
@@ -17,7 +19,9 @@ GitHub release is `0.9.0`.
 - Added private GitHub release packaging, version metadata, and a reproducible
   DMG build script.
 
-## 0.8.0 — Release preparation and internal defaults
+## Retrospective development milestones
+
+### 0.8.0 — Release preparation and internal defaults
 
 - Renamed the product from Pulpit to SermonClip throughout the app and storage paths.
 - Added the internal Stoney Creek default opening/closing bumper and protected it
@@ -29,7 +33,7 @@ GitHub release is `0.9.0`.
 - Made MP4 automatically required when YouTube upload is enabled.
 - Added internal DMG packaging with an Applications shortcut.
 
-## 0.7.0 — Export performance and media compatibility
+### 0.7.0 — Export performance and media compatibility
 
 - Added fast export that copies compatible source video without re-encoding.
 - Added source-derived adaptive H.264 bumper conversion when bumper streams are
@@ -42,7 +46,7 @@ GitHub release is `0.9.0`.
 - Added export progress percentages and estimated time remaining.
 - Added shared export names for MP4, MP3, and SRT outputs.
 
-## 0.6.0 — YouTube publishing workflow
+### 0.6.0 — YouTube publishing workflow
 
 - Added Google OAuth sign-in using PKCE and secure macOS Keychain storage.
 - Added YouTube title, description, visibility, playlist, and thumbnail controls.
@@ -55,7 +59,7 @@ GitHub release is `0.9.0`.
   uploads whose later API step fails.
 - Added private/unlisted/public visibility choices with YouTube restriction notices.
 
-## 0.5.0 — Subtitle workflow and local transcription
+### 0.5.0 — Subtitle workflow and local transcription
 
 - Added local subtitle generation for projects without a supplied SRT.
 - Added benchmarking and completion estimates before local transcription.
@@ -68,7 +72,7 @@ GitHub release is `0.9.0`.
 - Added subtitle preview in the main and synchronization players.
 - Added automatic selection of the first detected sermon subtitle cue.
 
-## 0.4.0 — Waveform editing and sermon boundaries
+### 0.4.0 — Waveform editing and sermon boundaries
 
 - Replaced coarse video scrubbing with waveform-based playhead control.
 - Added play/pause controls, persistent playhead time, and 15-second detail mode.
@@ -80,7 +84,7 @@ GitHub release is `0.9.0`.
 - Added manual takeover and clear validation when sermon start exceeds sermon end.
 - Added larger video preview and native AVPlayer-based playback.
 
-## 0.3.0 — Bumpers, captions, and export workflow
+### 0.3.0 — Bumpers, captions, and export workflow
 
 - Added persistent opening and closing bumper libraries with defaults.
 - Added MP4 and JPG bumper support, thumbnails, renaming, deletion confirmation,
@@ -91,7 +95,7 @@ GitHub release is `0.9.0`.
 - Added export success notices and an Open Export Folder action.
 - Added first-launch export-directory selection and per-project folder changes.
 
-## 0.2.0 — Native application foundation
+### 0.2.0 — Native application foundation
 
 - Established the native Apple Silicon SwiftUI macOS application.
 - Added local MP4 selection and native playback.
@@ -101,7 +105,7 @@ GitHub release is `0.9.0`.
 - Added project persistence and security-scoped file bookmarks.
 - Added the first automated test coverage for media, subtitle, and export behavior.
 
-## 0.1.0 — Prototype foundation
+### 0.1.0 — Prototype foundation
 
 - Established the initial SermonClip/Pulpit prototype and project structure.
 - Proved the local-first workflow for a full service video, sermon selection,
