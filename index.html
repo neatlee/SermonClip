@@ -50,20 +50,21 @@
 
     <section class="section" id="features" aria-labelledby="features-title">
       <div class="section-heading"><p class="eyebrow">What SermonClip does</p><h2 id="features-title">The steps from service recording to sermon export.</h2></div>
-      <div class="feature-grid">
-        <article class="feature-card reveal"><span class="feature-number">01</span><h3>Select the sermon</h3><p>Start with the full Sunday service recording and use the waveform to set the beginning and end of the sermon.</p></article>
-        <article class="feature-card reveal"><span class="feature-number">02</span><h3>Prepare subtitles</h3><p>Import an SRT or generate subtitles, review them over the video, and adjust their timing when needed.</p></article>
-        <article class="feature-card reveal"><span class="feature-number">03</span><h3>Export the files</h3><p>Export MP4, MP3, and SRT files, or upload the finished MP4 and subtitle track to a connected YouTube channel.</p></article>
+      <div class="process-list">
+        <article class="process-step reveal"><span class="process-number">01</span><div><h3>Choose Your Bumpers</h3><p>Select opening and closing video or JPG bumpers, and use saved defaults from the bumper library.</p></div></article>
+        <article class="process-step reveal"><span class="process-number">02</span><div><h3>Set the Sermon Boundaries</h3><p>Import the full service recording, and mark exactly where the sermon begins and ends using the preview and waveform.</p></div></article>
+        <article class="process-step reveal"><span class="process-number">03</span><div><h3>Review the Subtitles</h3><p>Import or generate subtitles, preview them over the sermon, and adjust their timing when needed.</p></div></article>
+        <article class="process-step reveal"><span class="process-number">04</span><div><h3>Export and Upload</h3><p>Export MP4, MP3, and SRT files, and optionally upload the finished video, description, playlist selection, and subtitles to YouTube.</p></div></article>
       </div>
     </section>
 
     <section class="section screen-section" aria-labelledby="screens-title">
       <div class="section-heading"><p class="eyebrow">Screens from the app</p><h2 id="screens-title">The main screens.</h2></div>
       <div class="screen-grid">
-        <article class="screen-card reveal"><img src="site-assets/screens/project.png" alt="SermonClip Project Panel showing bumpers, source video, and sermon trimming" loading="lazy"><div class="screen-caption"><h3>Project Panel</h3><p>Choose bumpers, select the service recording, and set the sermon boundaries.</p></div></article>
-        <article class="screen-card reveal"><img src="site-assets/screens/bumpers.png" alt="SermonClip Bumper Library screen with opening and closing bumpers" loading="lazy"><div class="screen-caption"><h3>Bumper Library</h3><p>Store opening and closing video or JPG bumpers and choose defaults.</p></div></article>
-        <article class="screen-card reveal"><img src="site-assets/screens/descriptions.png" alt="SermonClip YouTube Descriptions screen with saved presets" loading="lazy"><div class="screen-caption"><h3>YouTube Descriptions</h3><p>Save description presets for reuse across projects.</p></div></article>
-        <article class="screen-card reveal"><img src="site-assets/screens/youtube.png" alt="SermonClip YouTube Settings screen with Google configuration and channel connection" loading="lazy"><div class="screen-caption"><h3>YouTube Settings</h3><p>Import Google OAuth configuration and connect the YouTube channel.</p></div></article>
+        <article class="screen-card reveal"><a class="screen-image-link" href="site-assets/screens/project.png" data-lightbox="Project Panel"><img src="site-assets/screens/project.png" alt="SermonClip Project Panel showing bumpers, source video, and sermon trimming" loading="lazy"></a><div class="screen-caption"><h3>Project Panel</h3><p>Choose bumpers, select the service recording, and set the sermon boundaries.</p></div></article>
+        <article class="screen-card reveal"><a class="screen-image-link" href="site-assets/screens/bumpers.png" data-lightbox="Bumper Library"><img src="site-assets/screens/bumpers.png" alt="SermonClip Bumper Library screen with opening and closing bumpers" loading="lazy"></a><div class="screen-caption"><h3>Bumper Library</h3><p>Store opening and closing video or JPG bumpers and choose defaults.</p></div></article>
+        <article class="screen-card reveal"><a class="screen-image-link" href="site-assets/screens/descriptions.png" data-lightbox="YouTube Descriptions"><img src="site-assets/screens/descriptions.png" alt="SermonClip YouTube Descriptions screen with saved presets" loading="lazy"></a><div class="screen-caption"><h3>YouTube Descriptions</h3><p>Save description presets for reuse across projects.</p></div></article>
+        <article class="screen-card reveal"><a class="screen-image-link" href="site-assets/screens/youtube.png" data-lightbox="YouTube Settings"><img src="site-assets/screens/youtube.png" alt="SermonClip YouTube Settings screen with Google configuration and channel connection" loading="lazy"></a><div class="screen-caption"><h3>YouTube Settings</h3><p>Import Google OAuth configuration and connect the YouTube channel.</p></div></article>
       </div>
     </section>
 
@@ -82,6 +83,10 @@
     <span>© 2026 SermonClip</span>
     <span class="footer-links"><a href="privacy/">Privacy</a><a href="terms/">Terms</a><a href="CHANGELOG.md">Changelog</a><a href="https://github.com/stoneycreekbaptist/SermonClip">GitHub</a></span>
   </footer>
+  <dialog class="lightbox" aria-label="Screenshot preview">
+    <button class="lightbox-close" type="button" aria-label="Close screenshot preview">Close</button>
+    <img src="" alt="">
+  </dialog>
   <script>
     document.documentElement.classList.add('js');
     const revealItems = document.querySelectorAll('.reveal');
@@ -97,6 +102,22 @@
     } else {
       revealItems.forEach((item) => item.classList.add('is-visible'));
     }
+
+    const lightbox = document.querySelector('.lightbox');
+    const lightboxImage = lightbox.querySelector('img');
+    document.querySelectorAll('[data-lightbox]').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        const image = link.querySelector('img');
+        lightboxImage.src = link.href;
+        lightboxImage.alt = image.alt;
+        lightbox.showModal();
+      });
+    });
+    lightbox.querySelector('.lightbox-close').addEventListener('click', () => lightbox.close());
+    lightbox.addEventListener('click', (event) => {
+      if (event.target === lightbox) lightbox.close();
+    });
   </script>
 </body>
 </html>
