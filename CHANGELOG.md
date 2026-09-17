@@ -2,6 +2,13 @@
 
 ## Releases
 
+### 1.0.1 — Bundled bumper updates & cleanup
+
+- Automatically replaces changed protected bundled bumpers while preserving
+  their IDs, names, defaults, and current selections.
+- Removed obsolete legacy naming and migration paths from the fresh deployment.
+- Updated bumper compatibility documentation and removed noisy test diagnostics.
+
 ### 1.0.0 — SermonClip 1.0! 🎉
 
 - Added delayed exact-track polling for YouTube subtitle uploads so temporary
