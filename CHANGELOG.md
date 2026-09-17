@@ -1,11 +1,6 @@
 # SermonClip Changelog
 
-The `0.9.0` entry below is an actual published private GitHub Release for the
-internal Stoney Creek team. Earlier entries are a retrospective development
-timeline reconstructed from the local SermonClip builds and project work; those
-intermediate versions were milestones, not historical GitHub releases.
-
-## Published releases
+## Releases
 
 ### 0.9.0 — Initial internal release
 
@@ -19,7 +14,7 @@ intermediate versions were milestones, not historical GitHub releases.
 - Added private GitHub release packaging, version metadata, and a reproducible
   DMG build script.
 
-## Retrospective development milestones
+## Retrospective development milestones (prior to GitHub)
 
 ### 0.8.0 — Release preparation and internal defaults
 
