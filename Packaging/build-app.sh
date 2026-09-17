@@ -28,7 +28,7 @@ if [[ -f "$bundled_google_json" ]]; then
   cp "$bundled_google_json" "$app_dir/Contents/Resources/StoneyCreekGoogleConfiguration.json"
 fi
 # Build a standard macOS icon resource from the supplied SermonClip favicon.
-icon_source="$PWD/Logo/SermonClip-Lightmode-Favicon@4x.png"
+icon_source="$PWD/Packaging/SermonClip-Lightmode-Favicon@4x.png"
 icon_tmp_root="$(mktemp -d)"
 icon_tmp="$icon_tmp_root/SermonClip.iconset"
 mkdir -p "$icon_tmp"
