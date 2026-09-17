@@ -133,36 +133,11 @@ final class YouTubeStore: ObservableObject {
         self.secrets = secrets; self.defaults = defaults
         self.session = session ?? URLSession(configuration: .ephemeral, delegate: NoYouTubeRedirects(), delegateQueue: nil)
         do {
-            var bundledConfigurationWasUpdated = false
-            let bundled: GoogleDesktopConfiguration? = {
-                guard let bundledURL = AppResources.url(forResource: "StoneyCreekGoogleConfiguration", withExtension: "json"),
-                      let data = try? Data(contentsOf: bundledURL),
-                      let parsed = try? GoogleDesktopConfiguration.parse(data) else { return nil }
-                return parsed
-            }()
             configuration = try read("configuration")
-            if let bundled {
-                if let stored = configuration {
-                    // The packaged Stoney Creek build is managed by the app. When
-                    // its embedded OAuth client changes, silently migrate the
-                    // stored configuration and require a fresh channel sign-in.
-                    // Restrict this behavior to the real app defaults domain so
-                    // isolated test stores never consume the bundled credentials.
-                    if defaults === UserDefaults.standard && stored != bundled {
-                        try save(bundled, "configuration")
-                        try secrets.write(nil, key: "connection")
-                        configuration = bundled
-                        bundledConfigurationWasUpdated = true
-                    }
-                } else {
-                    try save(bundled, "configuration")
-                    configuration = bundled
-                }
-            }
             connection = try read("connection")
             job = try read("uploadJob")
             configured = configuration != nil
-            report(job != nil ? "An unfinished upload is saved. Resume it when ready." : bundledConfigurationWasUpdated ? "Built-in Google configuration updated. Reconnect your YouTube channel." : connection != nil ? "YouTube connected." : configured ? "Configuration imported. Connect your channel." : status, in: .account, tone: job != nil ? .warning : .normal)
+            report(job != nil ? "An unfinished upload is saved. Resume it when ready." : connection != nil ? "YouTube connected." : configured ? "Configuration imported. Connect your channel." : status, in: .account, tone: .normal)
         } catch { report(error.localizedDescription, in: .account, tone: .error) }
         presets = loadPresets()
         if job != nil { report("An unfinished upload is saved. Resume it when ready.", in: .upload, tone: .warning) }

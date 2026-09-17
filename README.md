@@ -35,7 +35,7 @@ Project data is stored outside the app bundle and is preserved across updates, i
 - Export preferences
 - YouTube authorization stored in the macOS Keychain
 
-The internal Stoney Creek build includes the bundled Google OAuth configuration and default bumper. If a future build contains a newer configuration, SermonClip updates it automatically and asks the user to reconnect the YouTube channel.
+SermonClip does not bundle Google credentials. Each user imports their own Google Desktop OAuth JSON in YouTube Settings, and the configuration is stored locally in the macOS Keychain.
 
 ## Workflow
 
@@ -52,7 +52,7 @@ SermonClip supports MP4 and JPG bumpers. JPG bumpers display for six seconds in 
 
 ## YouTube
 
-The Stoney Creek internal release includes its Google OAuth configuration. YouTube authorization tokens are stored in the macOS Keychain, not in project files. See [YouTube setup](YOUTUBE-SETUP.md) for Google project setup and troubleshooting details.
+YouTube authorization tokens and the imported Google configuration are stored in the macOS Keychain, not in project files. See [YouTube setup](YOUTUBE-SETUP.md) for Google project setup and troubleshooting details.
 
 See the [SermonClip Privacy Policy](PRIVACY.md) for a plain-language explanation of local storage, Google/YouTube access, and uploads.
 

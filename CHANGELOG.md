@@ -2,6 +2,12 @@
 
 ## Releases
 
+### 1.1.0 — Public-ready configuration
+
+- Removed the bundled Google OAuth configuration; users now import their own
+  Desktop OAuth JSON in YouTube Settings.
+- Removed Stoney Creek-specific credential packaging from the generic build.
+
 ### 1.0.1 — Bundled bumper updates & cleanup
 
 - Automatically replaces changed protected bundled bumpers while preserving

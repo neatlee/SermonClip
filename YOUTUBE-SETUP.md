@@ -1,4 +1,4 @@
-# YouTube upload development build
+# YouTube upload setup
 
 ## Connect
 

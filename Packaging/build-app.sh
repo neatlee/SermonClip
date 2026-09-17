@@ -28,13 +28,6 @@ cp THIRD_PARTY_NOTICES.md "$app_dir/Contents/Resources/THIRD_PARTY_NOTICES.md"
 default_bumpers="$app_dir/Contents/Resources/SermonCut_SermonCut.bundle/Resources/DefaultBumpers"
 mkdir -p "$default_bumpers"
 cp Packaging/DefaultBumpers/SCB-Bumper.mp4 "$default_bumpers/SCB-Bumper.mp4"
-# Optional internal Stoney Creek build configuration. Keep this file out of
-# generic distributions; when present it is copied into the app bundle and
-# imported into Keychain on first launch.
-bundled_google_json="$PWD/Packaging/StoneyCreekGoogleConfiguration.json"
-if [[ -f "$bundled_google_json" ]]; then
-  cp "$bundled_google_json" "$app_dir/Contents/Resources/StoneyCreekGoogleConfiguration.json"
-fi
 # Build a standard macOS icon resource from the supplied SermonClip favicon.
 icon_source="$PWD/Packaging/SermonClip-Lightmode-Favicon@4x.png"
 icon_tmp_root="$(mktemp -d)"
