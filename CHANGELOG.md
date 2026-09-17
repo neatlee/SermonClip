@@ -2,7 +2,7 @@
 
 ## Releases
 
-### 1.0.0 — SermonClip 1.0.0 🎉
+### 1.0.0 — SermonClip 1.0! 🎉
 
 - Added delayed exact-track polling for YouTube subtitle uploads so temporary
   processing delays do not produce false failure notices.
