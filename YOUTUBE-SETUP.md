@@ -1,72 +1,86 @@
-# YouTube upload setup
+# YouTube setup
 
-## Connect
+This guide covers the Google Cloud project, OAuth application, audience, and
+configuration JSON required before connecting SermonClip to YouTube. It ends
+with the in-app account connection step; uploading and exporting are
+self-explanatory once the connection is working.
 
-1. Enable YouTube Data API v3 in your Google Cloud project.
-2. Configure Google Auth platform; add your Google account as a test user if the
-   audience is External and the publishing status is Testing.
-3. Create a Desktop app OAuth client and download its JSON. Do not add it to this
-   repository or paste credentials into chat.
-4. Open SermonClip's **YouTube Settings** sidebar item and import that JSON locally.
-5. Choose **Connect YouTube**. Approve access in Google's browser page and select
-   the church's channel if offered. Verify the channel name shown in Settings.
+## 1. Create or select a Google Cloud project
 
-The app uses PKCE, a random state value, and a loopback-only callback listener.
-It requests youtube.upload, youtube.readonly, and youtube.force-ssl so it can add
-an uploaded video to a selected playlist. Configuration, refresh/access
-tokens, and resumable-upload records are stored in macOS Keychain. The app does
-not read browser cookies or store a Google password. Developer ad-hoc builds may
-prompt again for Keychain access after rebuilding. Disconnect removes the local
-authorization; Google's grant can be revoked separately in Google Account settings.
+1. Open [Google Cloud Console](https://console.cloud.google.com/) and sign in
+   with the Google account that owns or administers the church's YouTube
+   channel.
+2. Use the project picker at the top of the console to select an existing
+   project or choose **New Project**.
+3. Give the project a recognizable name, such as **SermonClip YouTube**, and
+   create it. Make sure the new project is selected before continuing.
 
-## Prepare an upload
+## 2. Enable the YouTube API
 
-- Use **Descriptions** in the sidebar to create/edit named presets. Applying a
-  preset copies text into the current draft, without linking subsequent edits.
-- Select **Upload to YouTube after export**, supply a title/description, optionally
-  select a local JPG no larger than 2 MiB, and choose Private/Unlisted/Public.
-- Use the **Playlist** picker to choose an existing playlist owned by the connected
-  channel. **Refresh playlists** reloads the list after changes made in YouTube;
-  the video is added after upload. Leave it at **No playlist** to skip assignment.
-- The toggle is off and visibility is Private at each launch. Export & Upload asks
-  for explicit confirmation, including the channel and chosen visibility.
-- Existing local MP4/MP3/SRT export completes first. Only the final MP4, metadata,
-  and selected thumbnail are uploaded. SRT upload is not part of this first version.
-- Public uploads can become visible before the thumbnail step finishes. Audience
-  settings are not assigned by SermonClip; check the channel defaults and YouTube Studio.
+1. In the selected project, open **APIs & Services → Library**.
+2. Search for **YouTube Data API v3**.
+3. Open it and click **Enable**.
 
-## Progress and recovery
+SermonClip uses this API for the connected channel, playlists, video uploads,
+thumbnails, metadata, and caption tracks.
 
-Video transfer uses 4 MiB chunks. Progress advances on Google-confirmed chunks;
-time remaining is estimated from observed throughput. Network errors pause with
-an actionable message rather than automatic endless retries. Resume queries the
-existing upload session before sending more bytes. The source's size and modification
-time must still match. Restarting SermonClip never resumes or publishes automatically.
-Once Google supplies a video ID, retries target only the remaining thumbnail/status
-steps. Discarding a retry record does not delete local files or YouTube videos.
-Check Studio before starting a new job after an expired session or ambiguous error.
+## 3. Configure the Google Auth Platform
 
-After upload, SermonClip checks returned privacy status. A mismatch is reported rather
-than claiming successful publication. YouTube's own HD processing can continue
-after the transfer completes. Private uploads are useful for initial live testing.
+1. Open [Google Auth Platform](https://console.cloud.google.com/auth/overview)
+   for the same project.
+2. Complete the app configuration/branding fields. Use a recognizable app name
+   such as **SermonClip**, and provide the requested support and developer
+   contact information.
+3. Set the audience to **External** unless the Google account is part of a
+   Google Workspace organization that owns the project.
+4. In **Audience → Test users**, add every Google account that will connect
+   SermonClip while the app remains in **Testing** status.
 
-## Google restrictions
+Testing status is appropriate for an internal app. Google may expire refresh
+tokens for external apps left in Testing after a limited period, so reconnect
+if Google asks for authorization again.
 
-- External OAuth apps in Testing generally have seven-day refresh-token expiry.
-- New unverified YouTube API projects restrict uploads to Private. Public/Unlisted
-  operation requires lifting the separate project restriction through Google's audit.
-- Custom thumbnails require channel eligibility/permissions. API quota, upload
-  limits, and longer-video eligibility still apply.
+## 4. Create the OAuth client and download its JSON
 
-Sources checked September 14, 2026:
-- https://developers.google.com/identity/protocols/oauth2/native-app
-- https://developers.google.com/youtube/v3/guides/using_resumable_upload_protocol
-- https://developers.google.com/youtube/v3/docs/videos/insert
-- https://developers.google.com/youtube/v3/docs/thumbnails/set
+1. In Google Auth Platform, open **Clients** (or **Credentials**, depending on
+   the console view).
+2. Choose **Create client** and select **Desktop app** as the application type.
+3. Give the client a recognizable name, such as **SermonClip Desktop**.
+4. Create the client and click **Download JSON**.
+5. Keep the downloaded JSON private. Do not commit it to GitHub, place it in a
+   shared website folder, or paste its contents into chat. The file is imported
+   locally by each SermonClip installation.
 
-## Validation boundary
+The downloaded file should be the Desktop application JSON generated by Google,
+not a service-account key or an API key. If you create a replacement OAuth
+client later, import the new JSON in SermonClip and reconnect the account.
 
-Unit/integration tests use in-memory credentials and a mock HTTP transport. No
-real account was connected and no real video uploaded during development testing.
-The browser callback, real Keychain prompts, Google consent configuration, live
-thumbnail eligibility, and full-length upload must be validated with the owner.
+## 5. Import the JSON and connect YouTube
+
+1. Open SermonClip and select **YouTube Settings**.
+2. Choose **Import Google Configuration JSON** and select the Desktop OAuth JSON
+   downloaded in the previous step.
+3. Choose **Connect YouTube**.
+4. Complete Google's consent screen in the browser and select the church's
+   YouTube channel if Google asks you to choose one.
+5. Return to SermonClip and confirm that the connected channel is shown in
+   YouTube Settings.
+
+SermonClip uses PKCE, a random OAuth state value, and a loopback-only callback
+listener. Tokens and resumable-upload records are stored in the macOS
+Keychain. The app does not read browser cookies or store a Google password.
+
+## Google restrictions and quota
+
+- The YouTube Data API has project-level quota limits. Review current usage in
+  the project's **APIs & Services → Quotas** page.
+- Custom thumbnails and some channel features depend on YouTube channel
+  eligibility.
+- YouTube may impose separate upload, visibility, processing, or verification
+  restrictions on a channel or project.
+
+Sources:
+
+- [Google native-app OAuth](https://developers.google.com/identity/protocols/oauth2/native-app)
+- [YouTube Data API](https://developers.google.com/youtube/v3/getting-started)
+- [Google Auth Platform](https://console.cloud.google.com/auth/overview)
