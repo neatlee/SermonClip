@@ -54,6 +54,8 @@ SermonClip supports MP4 and JPG bumpers. JPG bumpers display for six seconds in 
 
 The Stoney Creek internal release includes its Google OAuth configuration. YouTube authorization tokens are stored in the macOS Keychain, not in project files. See [YouTube setup](YOUTUBE-SETUP.md) for Google project setup and troubleshooting details.
 
+See the [SermonClip Privacy Policy](PRIVACY.md) for a plain-language explanation of local storage, Google/YouTube access, and uploads.
+
 ## Releases
 
 Version history is maintained in [CHANGELOG.md](CHANGELOG.md). Internal DMGs are published as private GitHub Releases.
