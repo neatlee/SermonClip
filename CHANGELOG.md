@@ -2,7 +2,7 @@
 
 ## Releases
 
-### 1.0.0 — Final internal release
+### 1.0.0 — SermonClip 1.0.0 🎉
 
 - Added delayed exact-track polling for YouTube subtitle uploads so temporary
   processing delays do not produce false failure notices.
@@ -12,7 +12,7 @@
 - Updated the bundled Stoney Creek opening and closing bumper with the latest
   supplied `SCB-Bumper.mp4`.
 
-### 0.9.0 — Initial internal release
+### 0.9.0 — First GitHub release
 
 - Packaged the Stoney Creek internal Apple Silicon DMG for macOS Tahoe 26+.
 - Included the bundled Stoney Creek Google OAuth configuration and default bumper.
