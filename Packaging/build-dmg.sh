@@ -16,7 +16,7 @@ cp -R "$app_path" "$staging_root/$app_name.app"
 ln -s /Applications "$staging_root/Applications"
 
 mkdir -p dist
-dmg_path="$PWD/dist/${app_name}-${version}-StoneyCreek-arm64.dmg"
+dmg_path="$PWD/dist/${app_name}-${version}-arm64.dmg"
 rm -f "$dmg_path"
 hdiutil create \
     -volname "${app_name} ${version}" \
