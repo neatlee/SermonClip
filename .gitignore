@@ -14,6 +14,8 @@ TestExports/
 
 # macOS metadata and editor state
 .DS_Store
+Logos/
+JSON Keys/
 .AppleDouble
 .LSOverride
 *.swp
