@@ -1,47 +1,55 @@
 # SermonClip
 
-Local-first macOS app for extracting a sermon from a full church-service video,
-adjusting captions, adding bumpers, and exporting deliverables.
+SermonClip is a local-first macOS app for extracting a sermon from a full church-service recording, preparing subtitles, adding opening and closing bumpers, and exporting finished media.
 
 ## Requirements
 
 - Apple Silicon Mac
-- macOS 26 (Tahoe) or later
-- Xcode 26 or later to build/run the app bundle
+- macOS Tahoe 26 or later
 
-Build the development app with `bash Packaging/build-app.sh`, then open
-`dist/SermonClip.app`. See [Development testing](DEVELOPMENT-TESTING.md) for the
-editing workflow and known limitations. The internal Swift package executable
-is still named `SermonCut`. Run automated checks with `swift test`.
+Xcode, Swift, Homebrew, and other developer tools are **not** required to run a packaged release.
 
-## Current MVP
+## Installing SermonClip
 
-- Persists a local opening/closing bumper library and defaults
-- Imports source MP4 and SRT files with security-scoped bookmarks
-- Parses SRT files, including subtitle tracks beginning at `00:00:00`
-- Produces a clearly labelled sermon-boundary suggestion and requires review
-- Provides native video preview, playhead boundary selection, ±5-second controls,
-  and nearby-pause refinement
-- Retimes supplied captions using an explicitly confirmed timeline offset
-- Joins bumpers with hard cuts and retimes captions by the full opening duration
-- Encodes in one hardware pass, with live video/MP3 stage percentages and estimated stage time remaining
-- Exports a 1080p H.264 MP4 targeting 9 Mbps and a 128 kbps MP3
+1. Download the latest DMG from the private GitHub Releases page.
+2. Open the DMG.
+3. Drag `SermonClip.app` to the Applications folder.
+4. Eject the DMG and open SermonClip from Applications.
 
-## YouTube upload (development)
+Because the internal build is not notarized, macOS may require **Open Anyway** in Privacy & Security the first time it is launched.
 
-See [YouTube setup and testing](YOUTUBE-SETUP.md). Includes Desktop OAuth configuration
-import, Keychain storage, a single connected channel, description presets, JPG
-thumbnails, visibility selection, playlist selection, and resumable uploads after local export. Live
-Google sign-in/upload has not yet been validated; tests use mocked responses only.
+## Updating SermonClip
 
-## Detection strategy
+Download the newer DMG and replace the existing app in Applications. Quit SermonClip first, then choose **Replace** when Finder asks.
 
-The app intentionally separates *boundary detection* from export. An SRT that
-starts at zero may be a sermon-only transcript, so timestamps alone cannot
-locate it in a 90-minute service. The active suggestion path requires confirmed
-caption timing and uses text keyword scoring, not a validated semantic model.
-Automatic audio-to-SRT alignment is not implemented yet. Manual selection is
-available without captions, and trusted supplied wording is preserved on export.
-The optional local Tahoe transcription path still needs runtime/model-asset
-validation. Accurate automatic detection within 30–60 seconds on a base M1
-remains an unverified requirement, not a capability of this development build.
+Project data is stored outside the app bundle and is preserved across updates, including:
+
+- Bumper library and defaults
+- YouTube description presets
+- Export preferences
+- YouTube authorization stored in the macOS Keychain
+
+The internal Stoney Creek build includes the bundled Google OAuth configuration and default bumper. If a future build contains a newer configuration, SermonClip updates it automatically and asks the user to reconnect the YouTube channel.
+
+## Workflow
+
+1. Select opening and closing bumpers.
+2. Choose the service MP4.
+3. Set and confirm the sermon start and end times with the waveform controls.
+4. Import a trusted SRT, or generate subtitles locally.
+5. Review subtitle timing and make any manual adjustments.
+6. Choose the export folder and export name.
+7. Select MP4 and/or MP3 output. An adjusted SRT is exported when subtitles are present.
+8. Optionally upload the finished MP4 and subtitle track to YouTube.
+
+SermonClip supports MP4 and JPG bumpers. JPG bumpers display for six seconds in video exports and are omitted from MP3 audio. Compatible video clips can use the fast, no-reencode export path; incompatible clips are converted automatically.
+
+## YouTube
+
+The Stoney Creek internal release includes its Google OAuth configuration. YouTube authorization tokens are stored in the macOS Keychain, not in project files. See [YouTube setup](YOUTUBE-SETUP.md) for Google project setup and troubleshooting details.
+
+## Releases
+
+Version history is maintained in [CHANGELOG.md](CHANGELOG.md). Internal DMGs are published as private GitHub Releases.
+
+Developer-only build and testing notes are kept separately in [DEVELOPMENT-TESTING.md](DEVELOPMENT-TESTING.md).
