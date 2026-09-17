@@ -22,7 +22,7 @@ SermonClip is a local-first macOS app for extracting a sermon from a full church
 3. Drag `SermonClip.app` to the Applications folder.
 4. Eject the DMG and open SermonClip from Applications.
 
-Because the internal build is not notarized, macOS may require **Open Anyway** in Privacy & Security the first time it is launched.
+Because the app is not notarized through the Mac App Store, macOS may show a Gatekeeper warning the first time it is launched. If that happens, open **System Settings → Privacy & Security**, scroll to the security message, choose **Open Anyway**, and confirm that you want to open SermonClip. Only do this for a copy downloaded from the official SermonClip repository or website.
 
 ## Updating SermonClip
 
@@ -35,7 +35,7 @@ Project data is stored outside the app bundle and is preserved across updates, i
 - Export preferences
 - YouTube authorization stored in the macOS Keychain
 
-SermonClip does not bundle Google credentials. Each user imports their own Google Desktop OAuth JSON in YouTube Settings, and the configuration is stored locally in the macOS Keychain.
+The packaged app includes the Google configuration needed for YouTube connection. You do not need to create a Google project or import a JSON file. Open **YouTube Settings** and choose **Connect to YouTube**. Google may show an app safety warning during the first connection while SermonClip’s OAuth app verification is being completed. If you trust the copy you downloaded, choose **Advanced**, then continue to SermonClip and complete the connection. This warning is separate from the macOS Gatekeeper warning.
 
 ## Workflow
 
@@ -52,7 +52,7 @@ SermonClip supports MP4 and JPG bumpers. JPG bumpers display for six seconds in 
 
 ## YouTube
 
-YouTube authorization tokens and the imported Google configuration are stored in the macOS Keychain, not in project files. See [YouTube setup](YOUTUBE-SETUP.md) for Google project setup and troubleshooting details.
+YouTube authorization tokens are stored in the macOS Keychain, not in project files. See [Using YouTube with SermonClip](YOUTUBE-SETUP.md) for installation, Gatekeeper, connection, export, and upload guidance.
 
 See the [SermonClip Privacy Policy](PRIVACY.md) for a plain-language explanation of local storage, Google/YouTube access, and uploads.
 
