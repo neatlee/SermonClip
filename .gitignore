@@ -1,0 +1,26 @@
+# SwiftPM and compiler output
+.build/
+.build-app/
+.build-relocatable/
+.clang-module-cache/
+
+# Packaged applications and installer artifacts
+dist/
+*.dmg
+
+# Local test media and generated exports
+TestMedia/
+TestExports/
+
+# macOS metadata and editor state
+.DS_Store
+.AppleDouble
+.LSOverride
+*.swp
+*.swo
+
+# Local credentials and ad-hoc configuration copies
+*.p12
+*.key
+*.pem
+*.mobileprovision
