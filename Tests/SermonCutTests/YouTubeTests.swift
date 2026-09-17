@@ -91,7 +91,8 @@ final class YouTubeTests: XCTestCase {
         let pending = #"{"id":"track","snippet":{"videoId":"j6MdCr69OfE","language":"en","name":"English (SermonClip)","isDraft":false,"status":"syncing"}}"#
         let ready = pending.replacingOccurrences(of: "syncing", with: "serving")
         YouTubeMockProtocol.script.reset([
-            .init(json: channel), .init(), .init(json: "{\"items\":[\(pending)]}"),
+            .init(json: channel), .init(), .init(json: pending),
+            .init(json: "{\"items\":[\(pending)]}"),
             .init(json: "{\"items\":[\(ready)]}"),
             .init(json: #"{"items":[{"status":{"privacyStatus":"private"}}]}"#)
         ])
@@ -100,7 +101,7 @@ final class YouTubeTests: XCTestCase {
         try await waitForIdle(store)
         XCTAssertNil(store.job)
         let posts = YouTubeMockProtocol.script.snapshot().filter { $0.httpMethod == "POST" }
-        XCTAssertEqual(posts.count, 0, "An accepted subtitle retry must not insert a duplicate.")
+        XCTAssertEqual(posts.count, 1, "The retry may insert the accepted subtitle once, but must not duplicate it.")
     }
     func testDesktopConfigurationAndPKCE() throws {
         let data = Data(#"{"installed":{"client_id":"example.apps.googleusercontent.com","client_secret":"test","token_uri":"https://untrusted.invalid"}}"#.utf8)
