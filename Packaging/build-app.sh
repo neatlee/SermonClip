@@ -9,6 +9,7 @@ build_dir="$(swift build -c release --scratch-path "$scratch_path" --show-bin-pa
 app_name="${1:-SermonClip}"
 [[ "$app_name" =~ ^[A-Za-z0-9_-]+$ ]] || { echo "Invalid app output name" >&2; exit 1; }
 app_dir="$PWD/dist/$app_name.app"
+rm -rf "$app_dir"
 mkdir -p "$app_dir/Contents/MacOS" "$app_dir/Contents/Resources"
 cp "$build_dir/SermonCut" "$app_dir/Contents/MacOS/SermonCut"
 cp Packaging/Info.plist "$app_dir/Contents/Info.plist"
