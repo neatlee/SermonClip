@@ -85,7 +85,9 @@
   </footer>
   <dialog class="lightbox" aria-label="Screenshot preview">
     <button class="lightbox-close" type="button" aria-label="Close screenshot preview"><span aria-hidden="true">×</span><span>CLOSE</span></button>
+    <button class="lightbox-nav lightbox-prev" type="button" aria-label="Previous screenshot"><span aria-hidden="true">‹</span></button>
     <img src="" alt="">
+    <button class="lightbox-nav lightbox-next" type="button" aria-label="Next screenshot"><span aria-hidden="true">›</span></button>
   </dialog>
   <script>
     document.documentElement.classList.add('js');
@@ -105,18 +107,30 @@
 
     const lightbox = document.querySelector('.lightbox');
     const lightboxImage = lightbox.querySelector('img');
-    document.querySelectorAll('[data-lightbox]').forEach((link) => {
+    const lightboxLinks = [...document.querySelectorAll('[data-lightbox]')];
+    let lightboxIndex = 0;
+    const showLightboxImage = (index) => {
+      lightboxIndex = (index + lightboxLinks.length) % lightboxLinks.length;
+      const link = lightboxLinks[lightboxIndex];
+      lightboxImage.src = link.href;
+      lightboxImage.alt = link.querySelector('img').alt;
+    };
+    lightboxLinks.forEach((link, index) => {
       link.addEventListener('click', (event) => {
         event.preventDefault();
-        const image = link.querySelector('img');
-        lightboxImage.src = link.href;
-        lightboxImage.alt = image.alt;
+        showLightboxImage(index);
         lightbox.showModal();
       });
     });
+    lightbox.querySelector('.lightbox-prev').addEventListener('click', () => showLightboxImage(lightboxIndex - 1));
+    lightbox.querySelector('.lightbox-next').addEventListener('click', () => showLightboxImage(lightboxIndex + 1));
     lightbox.querySelector('.lightbox-close').addEventListener('click', () => lightbox.close());
     lightbox.addEventListener('click', (event) => {
       if (event.target === lightbox) lightbox.close();
+    });
+    lightbox.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') showLightboxImage(lightboxIndex - 1);
+      if (event.key === 'ArrowRight') showLightboxImage(lightboxIndex + 1);
     });
     document.querySelectorAll('[data-current-year]').forEach((element) => {
       element.textContent = new Date().getFullYear();
