@@ -60,20 +60,33 @@ struct ContentView: View {
             }
             .safeAreaInset(edge: .top, spacing: 0) { Divider() }
         }
-        .alert(item: $updates.notice) { notice in
-            switch notice {
-            case .update(let release):
-                return Alert(
-                    title: Text("SermonClip \(release.version) is available"),
-                    message: Text("Download the latest DMG from GitHub, then replace SermonClip in Applications after quitting this copy."),
-                    primaryButton: .default(Text("Download Update")) {
-                        updates.openDownload(for: release)
-                    },
-                    secondaryButton: .cancel()
-                )
-            case .message(let title, let message):
-                return Alert(title: Text(title), message: Text(message), dismissButton: .default(Text("OK")))
+        .confirmationDialog(
+            "SermonClip \(updates.updateRelease?.version ?? "") is available",
+            isPresented: Binding(
+                get: { updates.updateRelease != nil },
+                set: { if !$0 { updates.updateRelease = nil } }
+            ),
+            titleVisibility: .visible
+        ) {
+            if let release = updates.updateRelease {
+                Button("Download DMG") {
+                    updates.updateRelease = nil
+                    updates.openDownload(for: release)
+                }
+                Button("Use Homebrew") {
+                    updates.chooseHomebrew(for: release)
+                }
             }
+            Button("Later", role: .cancel) { updates.updateRelease = nil }
+        } message: {
+            Text("Choose how you want to update SermonClip.")
+        }
+        .sheet(item: $updates.homebrewInstructions) { instructions in
+            HomebrewUpdateView(version: instructions.version)
+                .environmentObject(updates)
+        }
+        .alert(item: $updates.message) { message in
+            Alert(title: Text(message.title), message: Text(message.message), dismissButton: .default(Text("OK")))
         }
     }
 

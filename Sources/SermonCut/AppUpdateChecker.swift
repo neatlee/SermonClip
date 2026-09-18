@@ -8,26 +8,25 @@ struct AppUpdateRelease: Equatable {
     let downloadURL: URL
 }
 
-enum AppUpdateNotice: Identifiable {
-    case update(AppUpdateRelease)
-    case message(title: String, message: String)
+struct AppUpdateMessage: Identifiable {
+    let id = UUID()
+    let title: String
+    let message: String
+}
 
-    var id: String {
-        switch self {
-        case .update(let release):
-            return "update-\(release.version)"
-        case .message(let title, _):
-            return "message-\(title)"
-        }
-    }
+struct HomebrewUpdateInstructions: Identifiable {
+    let id = UUID()
+    let version: String
 }
 
 @MainActor
 final class AppUpdateChecker: ObservableObject {
-    @Published var notice: AppUpdateNotice?
+    @Published var updateRelease: AppUpdateRelease?
+    @Published var message: AppUpdateMessage?
+    @Published var homebrewInstructions: HomebrewUpdateInstructions?
     @Published private(set) var isChecking = false
 
-    private let endpoint = URL(string: "https://api.github.com/repos/stoneycreekbaptist/SermonClip/releases/latest")!
+    private let endpoint = URL(string: "https://api.github.com/repos/neatlee/SermonClip/releases/latest")!
 
     func checkForUpdates(silent: Bool = false) {
         guard !isChecking else { return }
@@ -38,13 +37,13 @@ final class AppUpdateChecker: ObservableObject {
             do {
                 let release = try await fetchLatestRelease()
                 if isNewer(release.version, than: currentVersion) {
-                    notice = .update(release)
+                    updateRelease = release
                 } else if !silent {
-                    notice = .message(title: "SermonClip is up to date", message: "You are running SermonClip \(currentVersion).")
+                    message = AppUpdateMessage(title: "SermonClip is up to date", message: "You are running SermonClip \(currentVersion).")
                 }
             } catch {
                 if !silent {
-                    notice = .message(title: "Update check failed", message: "SermonClip could not check GitHub for a newer release. Please try again later.")
+                    message = AppUpdateMessage(title: "Update check failed", message: "SermonClip could not check GitHub for a newer release. Please try again later.")
                 }
             }
         }
@@ -52,6 +51,20 @@ final class AppUpdateChecker: ObservableObject {
 
     func openDownload(for release: AppUpdateRelease) {
         NSWorkspace.shared.open(release.downloadURL)
+    }
+
+    func chooseHomebrew(for release: AppUpdateRelease) {
+        updateRelease = nil
+        homebrewInstructions = HomebrewUpdateInstructions(version: release.version)
+    }
+
+    func copyToPasteboard(_ command: String) {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(command, forType: .string)
+    }
+
+    func openTerminal() {
+        NSWorkspace.shared.open(URL(fileURLWithPath: "/System/Applications/Utilities/Terminal.app"))
     }
 
     private var currentVersion: String {

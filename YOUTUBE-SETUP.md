@@ -7,7 +7,7 @@ Cloud project or import a JSON file.
 
 ## Install the app
 
-1. Download the latest DMG from the [GitHub Releases page](https://github.com/stoneycreekbaptist/SermonClip/releases).
+1. Download the latest DMG from the [GitHub Releases page](https://github.com/neatlee/SermonClip/releases).
 2. Open the DMG and drag **SermonClip.app** to **Applications**.
 3. Eject the DMG, then open SermonClip from Applications.
 

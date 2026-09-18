@@ -17,7 +17,7 @@ SermonClip is a local-first macOS app for extracting a sermon from a full church
 
 ## Installing SermonClip
 
-1. Download the latest DMG from the [GitHub Releases page](https://github.com/stoneycreekbaptist/SermonClip/releases).
+1. Download the latest DMG from the [GitHub Releases page](https://github.com/neatlee/SermonClip/releases).
 2. Open the DMG.
 3. Drag `SermonClip.app` to the Applications folder.
 4. Eject the DMG and open SermonClip from Applications.
@@ -37,17 +37,17 @@ Project data is stored outside the app bundle and is preserved across updates, i
 
 ## Homebrew
 
-SermonClip is also available through the [SermonClip Homebrew tap](https://github.com/stoneycreekbaptist/homebrew-sermonclip):
+SermonClip is also available through the [SermonClip Homebrew tap](https://github.com/neatlee/homebrew-sermonclip):
 
 ```sh
-brew tap stoneycreekbaptist/sermonclip
+brew tap neatlee/sermonclip
 brew install --cask sermonclip
 ```
 
 If SermonClip was already installed from the website, Homebrew can adopt the existing app:
 
 ```sh
-brew tap stoneycreekbaptist/sermonclip
+brew tap neatlee/sermonclip
 brew install --cask --adopt sermonclip
 ```
 
@@ -78,4 +78,4 @@ See the [SermonClip Terms of Service](TERMS.md) for the terms governing use of t
 
 ## Releases
 
-Version history is maintained in [CHANGELOG.md](CHANGELOG.md). DMGs are published on the [GitHub Releases page](https://github.com/stoneycreekbaptist/SermonClip/releases).
+Version history is maintained in [CHANGELOG.md](CHANGELOG.md). DMGs are published on the [GitHub Releases page](https://github.com/neatlee/SermonClip/releases).
