@@ -29,7 +29,7 @@ a { color:inherit; }
 nav { display:flex; align-items:center; gap:28px; font-size:14px; color:var(--muted); }
 nav a, .text-link, .footer-links a { text-decoration:none; transition:color .25s ease; }
 nav a:hover, .text-link:hover, .footer-links a:hover { color:var(--text); }
-.hero { display:grid; grid-template-columns:1.08fr .92fr; gap:76px; align-items:center; padding:94px 0 110px; }
+.hero { display:grid; grid-template-columns:1.08fr .92fr; gap:76px; align-items:flex-start; padding:94px 0 110px; }
 .hero-copy { min-width:0; animation:fade-up .7s cubic-bezier(.22,.8,.32,1) both; }
 .hero-card { min-width:0; animation:fade-up .8s .12s cubic-bezier(.22,.8,.32,1) both; }
 .eyebrow { margin:0 0 13px; color:var(--accent); font-size:12px; font-weight:750; letter-spacing:.14em; text-transform:uppercase; }
