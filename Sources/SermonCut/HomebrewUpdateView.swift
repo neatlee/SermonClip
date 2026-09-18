@@ -16,15 +16,19 @@ struct HomebrewUpdateView: View {
                 .fixedSize(horizontal: false, vertical: true)
 
             commandRow(
+                title: "Trust this cask once",
+                command: "brew trust --cask neatlee/sermonclip/sermonclip"
+            )
+            commandRow(
                 title: "Already adopted by Homebrew",
-                command: "brew upgrade --cask sermonclip"
+                command: "brew upgrade --cask neatlee/sermonclip/sermonclip"
             )
             commandRow(
                 title: "Installed from the website",
-                command: "brew install --cask --adopt sermonclip"
+                command: "brew install --cask --adopt neatlee/sermonclip/sermonclip"
             )
 
-            Text("If you previously used the old Stoney Creek tap, run `brew untap stoneycreekbaptist/sermonclip` first. Otherwise, run `brew tap neatlee/sermonclip` once before either command.")
+            Text("If you previously used the old Stoney Creek tap, run `brew untap stoneycreekbaptist/sermonclip` first. Then run `brew tap neatlee/sermonclip` before trusting the cask.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)

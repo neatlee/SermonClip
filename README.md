@@ -41,7 +41,8 @@ SermonClip is also available through the [SermonClip Homebrew tap](https://githu
 
 ```sh
 brew tap neatlee/sermonclip
-brew install --cask sermonclip
+brew trust --cask neatlee/sermonclip/sermonclip
+brew install --cask neatlee/sermonclip/sermonclip
 ```
 
 If you previously tapped the old `stoneycreekbaptist/sermonclip` location, remove it first:
@@ -49,13 +50,15 @@ If you previously tapped the old `stoneycreekbaptist/sermonclip` location, remov
 ```sh
 brew untap stoneycreekbaptist/sermonclip
 brew tap neatlee/sermonclip
+brew trust --cask neatlee/sermonclip/sermonclip
 ```
 
 If SermonClip was already installed from the website, Homebrew can adopt the existing app:
 
 ```sh
 brew tap neatlee/sermonclip
-brew install --cask --adopt sermonclip
+brew trust --cask neatlee/sermonclip/sermonclip
+brew install --cask --adopt neatlee/sermonclip/sermonclip
 ```
 
 Future updates can be installed with `brew upgrade --cask sermonclip`.
