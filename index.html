@@ -119,6 +119,10 @@ brew install --cask neatlee/sermonclip/sermonclip</code></pre></div>
     };
     lightboxLinks.forEach((link, index) => {
       link.addEventListener('click', (event) => {
+        if (window.matchMedia('(max-width: 800px)').matches) {
+          event.preventDefault();
+          return;
+        }
         event.preventDefault();
         showLightboxImage(index);
         lightbox.showModal();
