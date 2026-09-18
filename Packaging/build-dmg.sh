@@ -10,7 +10,7 @@ app_name="${1:-SermonClip}"
 Packaging/build-app.sh "$app_name" >/dev/null
 app_path="$PWD/dist/$app_name.app"
 staging_root="$(mktemp -d)"
-trap 'rm -rf "$staging_root"' EXIT
+trap 'rm -rf "$staging_root" "$app_path"' EXIT
 
 cp -R "$app_path" "$staging_root/$app_name.app"
 ln -s /Applications "$staging_root/Applications"
