@@ -24,6 +24,24 @@ SermonClip is a local-first macOS app for extracting a sermon from a full church
 
 Because the app is not notarized through the Mac App Store, macOS may show a Gatekeeper warning the first time it is launched. If that happens, open **System Settings → Privacy & Security**, scroll to the security message, choose **Open Anyway**, and confirm that you want to open SermonClip. Only do this for a copy downloaded from the official SermonClip repository or website.
 
+### Install with Homebrew
+
+You can install SermonClip through the [SermonClip Homebrew tap](https://github.com/neatlee/homebrew-sermonclip):
+
+```sh
+brew tap neatlee/sermonclip
+brew trust --cask neatlee/sermonclip/sermonclip
+brew install --cask neatlee/sermonclip/sermonclip
+```
+
+If SermonClip is already installed from the website, Homebrew can adopt the existing app:
+
+```sh
+brew tap neatlee/sermonclip
+brew trust --cask neatlee/sermonclip/sermonclip
+brew install --cask --adopt neatlee/sermonclip/sermonclip
+```
+
 ## Updating SermonClip
 
 Download the newer DMG and replace the existing app in Applications. Quit SermonClip first, then choose **Replace** when Finder asks.
@@ -35,25 +53,9 @@ Project data is stored outside the app bundle and is preserved across updates, i
 - Export preferences
 - YouTube authorization stored in the macOS Keychain
 
-## Homebrew
+### Update with Homebrew
 
-SermonClip is also available through the [SermonClip Homebrew tap](https://github.com/neatlee/homebrew-sermonclip):
-
-```sh
-brew tap neatlee/sermonclip
-brew trust --cask neatlee/sermonclip/sermonclip
-brew install --cask neatlee/sermonclip/sermonclip
-```
-
-If SermonClip was already installed from the website, Homebrew can adopt the existing app:
-
-```sh
-brew tap neatlee/sermonclip
-brew trust --cask neatlee/sermonclip/sermonclip
-brew install --cask --adopt neatlee/sermonclip/sermonclip
-```
-
-Update an existing Homebrew installation with:
+If SermonClip was installed with Homebrew, update it with:
 
 ```sh
 brew upgrade --cask sermonclip
