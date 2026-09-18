@@ -2,6 +2,13 @@
 
 ## Releases
 
+### 1.2.1 — In-app updates and Homebrew distribution
+
+- Added silent update checks at launch and a manual “Check for Updates…” command.
+- Added guided DMG and Homebrew update paths, including cask trust and adoption instructions.
+- Added the official SermonClip Homebrew tap and cask for Apple Silicon installs and upgrades.
+- Updated repository, website, and updater references for the `neatlee` GitHub namespace.
+
 ### 1.2.0 — Combined YouTube settings and refreshed navigation
 
 - Combined YouTube connection and description presets into one YouTube Settings
