@@ -23,34 +23,14 @@ struct ContentView: View {
                 GeometryReader { _ in
                     VStack(spacing: 14) {
                         ForEach(MainSection.allCases) { item in
-                            Button { section = item } label: {
-                                VStack(spacing: 12) {
-                                    Image(systemName: item.icon)
-                                        .font(.system(size: 32, weight: .medium))
-                                        .foregroundStyle(section == item ? SermonClipPalette.primaryFill : SermonClipPalette.sidebarOutline)
-                                    Text(item.rawValue.uppercased())
-                                        .font(.body)
-                                        .tracking(1)
-                                        .multilineTextAlignment(.center)
-                                }
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            }
-                            .buttonStyle(MainSidebarNavigationStyle(selected: section == item || (section == nil && item == .project)))
-                            .background {
-                                GeometryReader { geometry in
-                                    Color.clear.preference(key: SidebarRowFrames.self,
-                                        value: [item: geometry.frame(in: .named("sidebar-items"))])
-                                }
-                            }
-                            .handCursor()
-                            .accessibilityAddTraits(section == item || (section == nil && item == .project) ? .isSelected : [])
+                            sidebarButton(for: item)
                         }
                     }
                     .padding(14)
                     .coordinateSpace(name: "sidebar-items")
                     .backgroundPreferenceValue(SidebarRowFrames.self) { frames in
                         if let frame = frames[section ?? .project] {
-                            SidebarSelectionHighlight(frame: frame, reduceMotion: reduceMotion, outlineOnly: true)
+                            SidebarSelectionHighlight(frame: frame, selectionKey: (section ?? .project).rawValue, reduceMotion: reduceMotion, outlineOnly: true)
                         }
                     }
                 }
@@ -79,6 +59,31 @@ struct ContentView: View {
             }
             .safeAreaInset(edge: .top, spacing: 0) { Divider() }
         }
+    }
+
+    private func sidebarButton(for item: MainSection) -> some View {
+        let isSelected = section == item || (section == nil && item == .project)
+        return Button { section = item } label: {
+            VStack(spacing: 12) {
+                Image(systemName: item.icon)
+                    .font(.system(size: 32, weight: .medium))
+                    .foregroundStyle(isSelected ? SermonClipPalette.primaryFill : SermonClipPalette.sidebarOutline)
+                Text(item.rawValue.uppercased())
+                    .font(.body)
+                    .tracking(1)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .buttonStyle(MainSidebarNavigationStyle(selected: isSelected))
+        .background {
+            GeometryReader { geometry in
+                Color.clear.preference(key: SidebarRowFrames.self,
+                    value: [item: geometry.frame(in: .named("sidebar-items"))])
+            }
+        }
+        .handCursor()
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     @ViewBuilder
@@ -1196,11 +1201,20 @@ private struct SidebarRowFrames: PreferenceKey {
 /// inside separate button-style hosts when the selection changes.
 struct SidebarSelectionHighlight: View {
     let frame: CGRect
+    let selectionKey: String
     let reduceMotion: Bool
     var outlineOnly = false
     @Environment(\.controlActiveState) private var activeState
     @State private var displayedOrigin: CGPoint?
     @State private var barOpacity = 0.0
+    @State private var displayedSelection = ""
+
+    init(frame: CGRect, selectionKey: String = "", reduceMotion: Bool, outlineOnly: Bool = false) {
+        self.frame = frame
+        self.selectionKey = selectionKey
+        self.reduceMotion = reduceMotion
+        self.outlineOnly = outlineOnly
+    }
 
     var body: some View {
         Color.clear.overlay(alignment: .topLeading) {
@@ -1235,6 +1249,7 @@ struct SidebarSelectionHighlight: View {
         .onAppear {
             displayedOrigin = frame.origin
             barOpacity = 1
+            displayedSelection = selectionKey
         }
         .onChange(of: frame) { oldFrame, newFrame in
             // A window/sidebar resize changes the row dimensions as well as its
@@ -1243,9 +1258,23 @@ struct SidebarSelectionHighlight: View {
             if reduceMotion || oldFrame.size != newFrame.size {
                 displayedOrigin = newFrame.origin
                 barOpacity = 1
-            } else {
+            } else if selectionKey.isEmpty {
                 withAnimation(.easeInOut(duration: 0.2)) {
                     displayedOrigin = newFrame.origin
+                }
+                flickerBar()
+            }
+        }
+        .onChange(of: selectionKey) { _, newSelection in
+            guard !newSelection.isEmpty else { return }
+            guard displayedSelection != newSelection else { return }
+            displayedSelection = newSelection
+            if reduceMotion {
+                displayedOrigin = frame.origin
+                barOpacity = 1
+            } else {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    displayedOrigin = frame.origin
                 }
                 flickerBar()
             }
