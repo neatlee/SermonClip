@@ -135,15 +135,25 @@ struct ContentView: View {
                             .buttonStyle(SermonClipSecondaryStyle())
                     }
                     bumperPickers
-                    HStack {
+                    HStack(spacing: 24) {
                         if let opening = store.selectedOpening {
-                            BumperThumbnailView(bumper: opening)
-                            Text("Opening · " + opening.name).font(.caption)
+                            HStack(spacing: 8) {
+                                BumperThumbnailView(bumper: opening)
+                                Text("Opening · " + opening.name)
+                                    .font(.caption)
+                                    .lineLimit(2)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                        Spacer()
                         if let closing = store.selectedClosing {
-                            Text("Closing · " + closing.name).font(.caption)
-                            BumperThumbnailView(bumper: closing)
+                            HStack(spacing: 8) {
+                                Text("Closing · " + closing.name)
+                                    .font(.caption)
+                                    .lineLimit(2)
+                                    .multilineTextAlignment(.trailing)
+                                BumperThumbnailView(bumper: closing)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .trailing)
                         }
                     }
                     // Library success confirmations belong only on the library panel.
@@ -465,19 +475,39 @@ struct ContentView: View {
     }
 
     private var bumperPickers: some View {
-        HStack(spacing: 24) {
-            Picker("Opening Bumper:", selection: $store.openingBumperID) {
-                Text("None").tag(UUID?.none)
-                ForEach(store.openingBumpers) { Text($0.name).tag(Optional($0.id)) }
-            }.sermonClipDropdownStyle()
-            .fixedSize()
-            .onChange(of: store.openingBumperID) { store.updateSelections() }
+        HStack(spacing: 12) {
+            HStack(spacing: 8) {
+                Text("Opening Bumper:").fixedSize(horizontal: true, vertical: false)
+                openingBumperPicker
+            }
             Spacer(minLength: 0)
-            Picker("Closing Bumper:", selection: $store.closingBumperID) {
-                Text("None").tag(UUID?.none)
-                ForEach(store.closingBumpers) { Text($0.name).tag(Optional($0.id)) }
-            }.sermonClipDropdownStyle().fixedSize().onChange(of: store.closingBumperID) { store.updateSelections() }
+            HStack(spacing: 8) {
+                Text("Closing Bumper:").fixedSize(horizontal: true, vertical: false)
+                closingBumperPicker
+            }
         }
+    }
+
+    private var openingBumperPicker: some View {
+        Picker("Opening Bumper:", selection: $store.openingBumperID) {
+            Text("None").tag(UUID?.none)
+            ForEach(store.openingBumpers) { Text($0.name).tag(Optional($0.id)) }
+        }
+        .labelsHidden()
+        .sermonClipDropdownStyle()
+        .frame(width: 140)
+        .onChange(of: store.openingBumperID) { store.updateSelections() }
+    }
+
+    private var closingBumperPicker: some View {
+        Picker("Closing Bumper:", selection: $store.closingBumperID) {
+            Text("None").tag(UUID?.none)
+            ForEach(store.closingBumpers) { Text($0.name).tag(Optional($0.id)) }
+        }
+        .labelsHidden()
+        .sermonClipDropdownStyle()
+        .frame(width: 140)
+        .onChange(of: store.closingBumperID) { store.updateSelections() }
     }
 
     private func chooseThumbnail() {
