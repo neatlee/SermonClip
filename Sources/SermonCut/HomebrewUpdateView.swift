@@ -28,7 +28,7 @@ struct HomebrewUpdateView: View {
                 command: "brew install --cask --adopt neatlee/sermonclip/sermonclip"
             )
 
-            Text("If you previously used the old Stoney Creek tap, run `brew untap stoneycreekbaptist/sermonclip` first. Then run `brew tap neatlee/sermonclip` before trusting the cask.")
+            Text("If this is your first Homebrew install, run `brew tap neatlee/sermonclip` once before trusting the cask.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)

@@ -45,14 +45,6 @@ brew trust --cask neatlee/sermonclip/sermonclip
 brew install --cask neatlee/sermonclip/sermonclip
 ```
 
-If you previously tapped the old `stoneycreekbaptist/sermonclip` location, remove it first:
-
-```sh
-brew untap stoneycreekbaptist/sermonclip
-brew tap neatlee/sermonclip
-brew trust --cask neatlee/sermonclip/sermonclip
-```
-
 If SermonClip was already installed from the website, Homebrew can adopt the existing app:
 
 ```sh
