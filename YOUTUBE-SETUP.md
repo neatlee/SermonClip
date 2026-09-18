@@ -1,9 +1,7 @@
 # Using YouTube with SermonClip
 
 This guide covers the steps needed to install SermonClip, connect a YouTube
-channel, and upload an exported sermon. Google project and OAuth client setup
-are handled for the packaged app, so users do not need to create a Google
-Cloud project or import a JSON file.
+channel, and upload an exported sermon.
 
 ## Install the app
 
