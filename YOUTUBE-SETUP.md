@@ -11,6 +11,14 @@ Cloud project or import a JSON file.
 2. Open the DMG and drag **SermonClip.app** to **Applications**.
 3. Eject the DMG, then open SermonClip from Applications.
 
+Alternatively, install SermonClip for the first time with Homebrew:
+
+```sh
+brew tap neatlee/sermonclip
+brew trust --cask neatlee/sermonclip/sermonclip
+brew install --cask neatlee/sermonclip/sermonclip
+```
+
 The app is distributed outside the Mac App Store, so macOS may show a
 Gatekeeper warning the first time it opens. If that happens:
 
