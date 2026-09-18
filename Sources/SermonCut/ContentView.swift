@@ -6,6 +6,7 @@ import UniformTypeIdentifiers
 struct ContentView: View {
     @EnvironmentObject private var store: ProjectStore
     @EnvironmentObject private var youtube: YouTubeStore
+    @EnvironmentObject private var updates: AppUpdateChecker
     @State private var importer: ImportTarget?
     @State private var showingImporter = false
     @State private var section: MainSection? = .project
@@ -58,6 +59,21 @@ struct ContentView: View {
                     .panelVisible(section == .youtube)
             }
             .safeAreaInset(edge: .top, spacing: 0) { Divider() }
+        }
+        .alert(item: $updates.notice) { notice in
+            switch notice {
+            case .update(let release):
+                return Alert(
+                    title: Text("SermonClip \(release.version) is available"),
+                    message: Text("Download the latest DMG from GitHub, then replace SermonClip in Applications after quitting this copy."),
+                    primaryButton: .default(Text("Download Update")) {
+                        updates.openDownload(for: release)
+                    },
+                    secondaryButton: .cancel()
+                )
+            case .message(let title, let message):
+                return Alert(title: Text(title), message: Text(message), dismissButton: .default(Text("OK")))
+            }
         }
     }
 

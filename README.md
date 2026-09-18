@@ -35,6 +35,24 @@ Project data is stored outside the app bundle and is preserved across updates, i
 - Export preferences
 - YouTube authorization stored in the macOS Keychain
 
+## Homebrew
+
+SermonClip is also available through the [SermonClip Homebrew tap](https://github.com/stoneycreekbaptist/homebrew-sermonclip):
+
+```sh
+brew tap stoneycreekbaptist/sermonclip
+brew install --cask sermonclip
+```
+
+If SermonClip was already installed from the website, Homebrew can adopt the existing app:
+
+```sh
+brew tap stoneycreekbaptist/sermonclip
+brew install --cask --adopt sermonclip
+```
+
+Future updates can be installed with `brew upgrade --cask sermonclip`.
+
 The packaged app includes the Google configuration needed for YouTube connection. You do not need to create a Google project or import a JSON file. Open **YouTube Settings** and choose **Connect to YouTube**. Google may show an app safety warning during the first connection while SermonClip’s OAuth app verification is being completed. If you trust the copy you downloaded, choose **Advanced**, then continue to SermonClip and complete the connection. This warning is separate from the macOS Gatekeeper warning.
 
 ## Workflow
