@@ -68,7 +68,7 @@ final class AppUpdateChecker: ObservableObject {
     }
 
     private var currentVersion: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.2.1"
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.2.2"
     }
 
     private func fetchLatestRelease() async throws -> AppUpdateRelease {

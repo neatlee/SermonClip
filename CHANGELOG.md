@@ -2,6 +2,12 @@
 
 ## Releases
 
+### 1.2.2 — Homebrew update reliability
+
+- Refresh Homebrew metadata before checking for a SermonClip upgrade.
+- Added matching Homebrew update guidance to the app, repository, tap, and website.
+- Refined the website download actions and Homebrew command blocks.
+
 ### 1.2.1 — In-app updates and Homebrew distribution
 
 - Added silent update checks at launch and a manual “Check for Updates…” command.

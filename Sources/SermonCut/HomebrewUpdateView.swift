@@ -21,7 +21,7 @@ struct HomebrewUpdateView: View {
             )
             commandRow(
                 title: "Already adopted by Homebrew",
-                command: "brew upgrade --cask neatlee/sermonclip/sermonclip"
+                command: "brew update && brew upgrade --cask neatlee/sermonclip/sermonclip"
             )
             commandRow(
                 title: "Installed from the website",

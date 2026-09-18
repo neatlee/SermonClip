@@ -58,7 +58,8 @@ Project data is stored outside the app bundle and is preserved across updates, i
 If SermonClip was installed with Homebrew, update it with:
 
 ```sh
-brew upgrade --cask sermonclip
+brew update
+brew upgrade --cask neatlee/sermonclip/sermonclip
 ```
 
 The packaged app includes the Google configuration needed for YouTube connection. You do not need to create a Google project or import a JSON file. Open **YouTube Settings** and choose **Connect to YouTube**. Google may show an app safety warning during the first connection while SermonClip’s OAuth app verification is being completed. If you trust the copy you downloaded, choose **Advanced**, then continue to SermonClip and complete the connection. This warning is separate from the macOS Gatekeeper warning.
