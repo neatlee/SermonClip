@@ -68,6 +68,10 @@ Applications. Your bumper library, description presets, export preferences,
 and saved YouTube authorization remain outside the app bundle and are preserved
 across updates.
 
+SermonClip also checks for updates when it launches and prompts you when a new
+release is available. You can also choose **Check for Updates…** from the app’s
+menu at any time.
+
 If SermonClip was installed with Homebrew, refresh Homebrew and update it with:
 
 ```sh
@@ -83,10 +87,6 @@ brew tap neatlee/sermonclip
 brew trust --cask neatlee/sermonclip/sermonclip
 brew install --cask --adopt neatlee/sermonclip/sermonclip
 ```
-
-SermonClip also checks for updates when it launches and prompts you when a new
-release is available. You can also choose **Check for Updates…** from the app’s
-menu at any time.
 
 For privacy and local-storage details, see the [SermonClip Privacy Policy](PRIVACY.md).
 For the terms governing use of the app, see the [SermonClip Terms of Service](TERMS.md).
