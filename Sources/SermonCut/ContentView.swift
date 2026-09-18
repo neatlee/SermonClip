@@ -31,6 +31,7 @@ struct ContentView: View {
                                     Text(item.rawValue.uppercased())
                                         .font(.body)
                                         .tracking(1)
+                                        .multilineTextAlignment(.center)
                                 }
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                             }
@@ -1157,7 +1158,10 @@ private struct MainSidebarNavigationBody: View {
         configuration.label
             .foregroundStyle(Color.primary)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(.horizontal, 8)
+            // Reserve the vertical selection bar and the same 14-point gap
+            // between the bar and the button edge for the label content.
+            .padding(.leading, 36)
+            .padding(.trailing, 36)
             .padding(.vertical, 12)
             .background {
                 if selected || hovering {
@@ -1232,13 +1236,16 @@ struct SidebarSelectionHighlight: View {
             displayedOrigin = frame.origin
             barOpacity = 1
         }
-        .onChange(of: frame.origin) { _, newOrigin in
-            if reduceMotion {
-                displayedOrigin = newOrigin
+        .onChange(of: frame) { oldFrame, newFrame in
+            // A window/sidebar resize changes the row dimensions as well as its
+            // origin. Keep the highlight locked to that layout change instead
+            // of animating it as though the user selected another section.
+            if reduceMotion || oldFrame.size != newFrame.size {
+                displayedOrigin = newFrame.origin
                 barOpacity = 1
             } else {
                 withAnimation(.easeInOut(duration: 0.2)) {
-                    displayedOrigin = newOrigin
+                    displayedOrigin = newFrame.origin
                 }
                 flickerBar()
             }
