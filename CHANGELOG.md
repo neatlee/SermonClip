@@ -2,6 +2,21 @@
 
 ## Releases
 
+### 1.2.0 — Combined YouTube settings and refreshed navigation
+
+- Combined YouTube connection and description presets into one YouTube Settings
+  panel.
+- Reworked the main sidebar into three larger, responsive sections with animated
+  selection borders and subtle hover indicators.
+- Updated the sidebar, panel sizing, and related controls for the three-section
+  app layout.
+
+### 1.1.1 — Flexible YouTube credentials
+
+- Added manual Client ID and Client Secret entry in YouTube Settings, with
+  Google Desktop OAuth JSON import retained as an alternative.
+- Updated the setup documentation to describe both credential paths.
+
 ### 1.1.0 — Public-ready configuration
 
 - Removed the bundled Google OAuth configuration; users now import their own

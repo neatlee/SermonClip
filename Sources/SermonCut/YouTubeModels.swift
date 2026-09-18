@@ -24,16 +24,23 @@ struct GoogleDesktopConfiguration: Codable, Equatable {
     var client_id: String
     var client_secret: String
 
+    static func make(clientID: String, clientSecret: String) throws -> Self {
+        let id = clientID.trimmingCharacters(in: .whitespacesAndNewlines)
+        let secret = clientSecret.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard id.hasSuffix(".apps.googleusercontent.com"), !secret.isEmpty else {
+            throw YouTubeFailure(message: "Enter a valid Google Desktop app client ID and client secret.")
+        }
+        return Self(client_id: id, client_secret: secret)
+    }
+
     static func parse(_ data: Data) throws -> Self {
         struct File: Decodable { let installed: GoogleDesktopConfiguration }
         guard data.count < 100_000,
-              let file = try? JSONDecoder().decode(File.self, from: data),
-              file.installed.client_id.hasSuffix(".apps.googleusercontent.com"),
-              !file.installed.client_secret.isEmpty else {
+              let file = try? JSONDecoder().decode(File.self, from: data) else {
             throw YouTubeFailure(message: "Choose the Google JSON downloaded for a Desktop app OAuth client, not a Web client or service account.")
         }
         // Never trust auth/token endpoints from an imported file.
-        return file.installed
+        return try make(clientID: file.installed.client_id, clientSecret: file.installed.client_secret)
     }
 }
 
@@ -168,7 +175,7 @@ struct YouTubeKeychain: YouTubeSecretStorage {
         [kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: service, kSecAttrAccount as String: key]
     }
     private func failure(_ status: OSStatus) -> YouTubeFailure {
-        YouTubeFailure(message: "Keychain access failed (\(status)). Your Google credentials were not logged or saved elsewhere.")
+        YouTubeFailure(message: "SermonClip couldn't access the saved Google credentials. Please re-enter your Client ID and Client Secret in Step 1, save them, and then try connecting again. Your credentials were not logged or saved elsewhere.")
     }
 
     private func cacheKey(_ key: String) -> String { service + "\u{1F}" + key }

@@ -20,36 +20,50 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView {
             VStack(spacing: 0) {
-                ScrollView {
-                    VStack(spacing: 2) {
-                    ForEach(MainSection.allCases) { item in
-                        Button { section = item } label: {
-                            Label(item.rawValue, systemImage: item.icon)
-                        }
-                        .buttonStyle(SidebarNavigationStyle(selected: section == item || (section == nil && item == .project)))
-                        .background {
-                            GeometryReader { geometry in
-                                Color.clear.preference(key: SidebarRowFrames.self,
-                                    value: [item: geometry.frame(in: .named("sidebar-items"))])
+                GeometryReader { _ in
+                    VStack(spacing: 14) {
+                        ForEach(MainSection.allCases) { item in
+                            Button { section = item } label: {
+                                VStack(spacing: 12) {
+                                    Image(systemName: item.icon)
+                                        .font(.system(size: 32, weight: .medium))
+                                        .foregroundStyle(section == item ? SermonClipPalette.primaryFill : SermonClipPalette.sidebarOutline)
+                                    Text(item.rawValue.uppercased())
+                                        .font(.body)
+                                        .tracking(1)
+                                }
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
                             }
+                            .buttonStyle(MainSidebarNavigationStyle(selected: section == item || (section == nil && item == .project)))
+                            .background {
+                                GeometryReader { geometry in
+                                    Color.clear.preference(key: SidebarRowFrames.self,
+                                        value: [item: geometry.frame(in: .named("sidebar-items"))])
+                                }
+                            }
+                            .handCursor()
+                            .accessibilityAddTraits(section == item || (section == nil && item == .project) ? .isSelected : [])
                         }
-                        .handCursor()
-                        .accessibilityAddTraits(section == item || (section == nil && item == .project) ? .isSelected : [])
                     }
-                    }
-                    .padding(8)
+                    .padding(14)
                     .coordinateSpace(name: "sidebar-items")
                     .backgroundPreferenceValue(SidebarRowFrames.self) { frames in
                         if let frame = frames[section ?? .project] {
-                            SidebarSelectionHighlight(frame: frame, reduceMotion: reduceMotion)
+                            SidebarSelectionHighlight(frame: frame, reduceMotion: reduceMotion, outlineOnly: true)
                         }
                     }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 Divider()
                 sidebarLogo
             }
+            .overlay {
+                RoundedRectangle(cornerRadius: 18)
+                    .stroke(SermonClipPalette.primaryFill, lineWidth: 1)
+                    .allowsHitTesting(false)
+            }
             .navigationTitle(AppIdentity.displayName)
-            .navigationSplitViewColumnWidth(min: 190, ideal: 210)
+            .navigationSplitViewColumnWidth(min: 190, ideal: 210, max: 350)
         } detail: {
             // Keep page identities alive so navigation does not discard draft edits,
             // reset the playhead, or restart waveform extraction.
@@ -59,9 +73,7 @@ struct ContentView: View {
                     BumperLibraryView()
                 }
                 .panelVisible(section == .bumpers)
-                DescriptionLibraryView()
-                    .panelVisible(section == .descriptions)
-                ScrollView { YouTubeSettingsView() }
+                YouTubeSettingsView()
                     .panelVisible(section == .youtube)
             }
             .safeAreaInset(edge: .top, spacing: 0) { Divider() }
@@ -956,7 +968,7 @@ private struct BumperLibraryView: View {
                     .transition(.opacity)
             }
             Text("Add MP4 videos or JPG images to your bumper library. JPG bumpers are displayed for 6 seconds before the sermon begins or after it ends. JPG bumpers are not included in the MP3 export. Imported bumpers are copied into the library, and you can safely move or delete the originals afterward.")
-                .font(.caption)
+                .font(.body)
                 .foregroundStyle(.secondary)
                 .padding(.bottom, 4)
             Picker("For new projects:", selection: $store.preferences.startupBumperMode) {
@@ -967,7 +979,7 @@ private struct BumperLibraryView: View {
                     VStack(alignment: .leading, spacing: 0) {
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
-                                Text(kind.title).font(.headline)
+                                Text(kind.title).font(.title2.bold())
                                 Spacer()
                                 SermonClipButton("Add \(kind.title) Bumper") {
                                     addingKind = kind
@@ -1127,6 +1139,48 @@ private struct SidebarNavigationBody: View {
     }
 }
 
+struct MainSidebarNavigationStyle: ButtonStyle {
+    let selected: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        MainSidebarNavigationBody(selected: selected, configuration: configuration)
+    }
+}
+
+private struct MainSidebarNavigationBody: View {
+    let selected: Bool
+    let configuration: ButtonStyleConfiguration
+    @Environment(\.controlActiveState) private var activeState
+    @State private var hovering = false
+
+    var body: some View {
+        configuration.label
+            .foregroundStyle(Color.primary)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 12)
+            .background {
+                if selected || hovering {
+                    RoundedRectangle(cornerRadius: 12).fill(Color.primary.opacity(0.05))
+                }
+            }
+            .overlay(alignment: .trailing) {
+                if hovering && !selected {
+                    GeometryReader { proxy in
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(SermonClipPalette.sidebarOutline)
+                            .frame(width: 8, height: proxy.size.height * 0.72)
+                            .offset(x: proxy.size.width - 22, y: proxy.size.height * 0.14)
+                            .opacity(0.1)
+                    }
+                }
+            }
+            .contentShape(Rectangle())
+            .opacity(activeState == .inactive ? 0.55 : configuration.isPressed ? 0.75 : 1)
+            .onHover { hovering = $0 }
+    }
+}
+
 private struct SidebarRowFrames: PreferenceKey {
     static var defaultValue: [MainSection: CGRect] { [:] }
     static func reduce(value: inout [MainSection: CGRect], nextValue: () -> [MainSection: CGRect]) {
@@ -1139,37 +1193,79 @@ private struct SidebarRowFrames: PreferenceKey {
 struct SidebarSelectionHighlight: View {
     let frame: CGRect
     let reduceMotion: Bool
+    var outlineOnly = false
     @Environment(\.controlActiveState) private var activeState
+    @State private var displayedOrigin: CGPoint?
+    @State private var barOpacity = 0.0
 
     var body: some View {
         Color.clear.overlay(alignment: .topLeading) {
-            RoundedRectangle(cornerRadius: 8)
-                .fill(SermonClipPalette.secondaryFill)
-                .overlay {
+            Group {
+                if outlineOnly {
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(SermonClipPalette.sidebarOutline, lineWidth: 1)
+                } else {
                     RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.black.opacity(SermonClipPalette.hoverOverlayOpacity))
-                }
-                .frame(width: frame.width, height: frame.height)
-                .offset(x: frame.minX, y: frame.minY)
-                .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: frame)
-                .opacity(activeState == .inactive ? 0.55 : 1)
+                        .fill(SermonClipPalette.secondaryFill)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.black.opacity(SermonClipPalette.hoverOverlayOpacity))
+                        }
+                    }
+            }
+            .frame(width: frame.width, height: frame.height)
+            .offset(x: displayedOrigin?.x ?? frame.minX, y: displayedOrigin?.y ?? frame.minY)
+            .opacity(activeState == .inactive ? 0.55 : 1)
+        }
+        .overlay(alignment: .topLeading) {
+            if outlineOnly {
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(SermonClipPalette.sidebarOutline)
+                    .frame(width: 8, height: frame.height * 0.72)
+                    .offset(x: frame.maxX - 22, y: frame.minY + frame.height * 0.14)
+                    .opacity(barOpacity * (activeState == .inactive ? 0.55 : 1))
+            }
         }
         .allowsHitTesting(false)
         .accessibilityHidden(true)
+        .onAppear {
+            displayedOrigin = frame.origin
+            barOpacity = 1
+        }
+        .onChange(of: frame.origin) { _, newOrigin in
+            if reduceMotion {
+                displayedOrigin = newOrigin
+                barOpacity = 1
+            } else {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    displayedOrigin = newOrigin
+                }
+                flickerBar()
+            }
+        }
+    }
+
+    private func flickerBar() {
+        barOpacity = 0
+        withAnimation(.easeIn(duration: 0.07)) { barOpacity = 0.9 }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+            withAnimation(.linear(duration: 0.05)) { barOpacity = 0.15 }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.24) {
+            withAnimation(.easeOut(duration: 0.14)) { barOpacity = 1 }
+        }
     }
 }
 
 private enum MainSection: String, CaseIterable, Identifiable {
     case project = "Project"
     case bumpers = "Bumper Library"
-    case descriptions = "YouTube Descriptions"
     case youtube = "YouTube Settings"
     var id: String { rawValue }
     var icon: String {
         switch self {
         case .project: "scissors"
         case .bumpers: "rectangle.stack"
-        case .descriptions: "text.alignleft"
         case .youtube: "play.rectangle"
         }
     }

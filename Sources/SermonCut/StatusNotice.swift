@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum NoticeTone { case normal, warning, error }
+enum NoticeTone: Equatable { case normal, warning, error }
 enum ProjectArea: Hashable { case source, trim, subtitles, bumpers, export }
 enum YouTubeArea: Hashable { case account, playlists, thumbnail, upload }
 struct ProjectNotice {
@@ -69,19 +69,23 @@ struct SermonClipButton<Label: View>: View {
 enum SermonClipButtonKind { case largePrimary, primary, secondary, destructive, link, trimStart, trimEnd }
 
 enum SermonClipPalette {
+    static let primaryFill = Color(red: 1, green: 212.0 / 255, blue: 158.0 / 255)
+    static let sidebarOutline = Color(red: 173.0 / 255, green: 144.0 / 255, blue: 98.0 / 255)
     static let secondaryFill = Color(red: 1, green: 245.0 / 255, blue: 233.0 / 255)
     static let hoverOverlayOpacity = 0.04
 }
 
 struct SermonClipUnifiedButtonStyle: ButtonStyle {
     var kind: SermonClipButtonKind = .secondary
+    var linkColor: Color = .primary
     func makeBody(configuration: Configuration) -> some View {
-        SermonClipStyledButtonBody(kind: kind, configuration: configuration)
+        SermonClipStyledButtonBody(kind: kind, linkColor: linkColor, configuration: configuration)
     }
 }
 
 private struct SermonClipStyledButtonBody: View {
     let kind: SermonClipButtonKind
+    let linkColor: Color
     let configuration: ButtonStyleConfiguration
     @Environment(\.controlActiveState) private var activeState
     @Environment(\.isEnabled) private var isEnabled
@@ -102,7 +106,7 @@ private struct SermonClipStyledButtonBody: View {
         let fill = !trim && !destructive && !primary ? SermonClipPalette.secondaryFill : color(kind == .trimStart ? 0x348559 : kind == .trimEnd ? 0xdb383c : destructive ? 0xd71e04 : 0xffd49e)
         let border = trim ? fill : color(destructive ? 0xbc1603 : primary ? 0xefc794 : 0xf6ede1)
         configuration.label
-            .foregroundStyle(link ? Color.primary : destructive || trim ? Color.white : Color.black)
+            .foregroundStyle(link ? linkColor : destructive || trim ? Color.white : Color.black)
             .lineLimit(1)
             .fixedSize(horizontal: !fullWidth, vertical: true)
             .padding(.horizontal, link ? 0 : 12)
@@ -145,8 +149,9 @@ struct SermonClipDestructiveStyle: ButtonStyle {
     }
 }
 struct SermonClipLinkStyle: ButtonStyle {
+    var foreground: Color = .primary
     func makeBody(configuration: Configuration) -> some View {
-        SermonClipUnifiedButtonStyle(kind: .link).makeBody(configuration: configuration)
+        SermonClipUnifiedButtonStyle(kind: .link, linkColor: foreground).makeBody(configuration: configuration)
     }
 }
 

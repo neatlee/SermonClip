@@ -23,6 +23,14 @@ cp "$build_dir/SermonCut" "$app_dir/Contents/MacOS/SermonCut"
 cp Packaging/Info.plist "$app_dir/Contents/Info.plist"
 ditto "$resource_bundle" "$app_dir/Contents/Resources/SermonCut_SermonCut.bundle"
 cp THIRD_PARTY_NOTICES.md "$app_dir/Contents/Resources/THIRD_PARTY_NOTICES.md"
+# The production OAuth client configuration is local-only and intentionally
+# excluded from Git. It is bundled into the app at packaging time.
+bundled_google_json="$PWD/JSON Keys/sermonclip.json"
+[[ -f "$bundled_google_json" ]] || {
+  echo "Missing local Google OAuth configuration: $bundled_google_json" >&2
+  exit 1
+}
+cp "$bundled_google_json" "$app_dir/Contents/Resources/sermonclip.json"
 # Internal church defaults are copied into the application itself. Neither
 # TestMedia nor the project checkout is needed by the installed app.
 default_bumpers="$app_dir/Contents/Resources/SermonCut_SermonCut.bundle/Resources/DefaultBumpers"

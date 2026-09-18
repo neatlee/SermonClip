@@ -22,7 +22,7 @@ final class YouTubeStore: ObservableObject {
     @Published private(set) var connection: GoogleConnection?
     @Published private(set) var configured = false
     @Published private(set) var busy = false
-    @Published private(set) var status = "Import your Google Desktop app JSON to begin."
+    @Published private(set) var status = "Connect your YouTube channel to begin."
     @Published private(set) var notices: [YouTubeArea: ProjectNotice] = [:]
     private var noticeDismissalTasks: [YouTubeArea: Task<Void, Never>] = [:]
     func report(_ text: String, in area: YouTubeArea, tone: NoticeTone = .normal, dismissAfterSeconds: Double? = nil) {
@@ -133,7 +133,17 @@ final class YouTubeStore: ObservableObject {
         self.secrets = secrets; self.defaults = defaults
         self.session = session ?? URLSession(configuration: .ephemeral, delegate: NoYouTubeRedirects(), delegateQueue: nil)
         do {
-            configuration = try read("configuration")
+            let savedConfiguration: GoogleDesktopConfiguration? = try read("configuration")
+            if let bundled = try loadBundledConfiguration() {
+                configuration = bundled
+                if savedConfiguration != bundled {
+                    try? secrets.write(nil, key: "connection")
+                    try? save(bundled, "configuration")
+                    connection = nil
+                }
+            } else {
+                configuration = savedConfiguration
+            }
             connection = try read("connection")
             job = try read("uploadJob")
             configured = configuration != nil
@@ -142,6 +152,14 @@ final class YouTubeStore: ObservableObject {
         presets = loadPresets()
         if job != nil { report("An unfinished upload is saved. Resume it when ready.", in: .upload, tone: .warning) }
     }
+
+    private func loadBundledConfiguration() throws -> GoogleDesktopConfiguration? {
+        guard let url = Bundle.main.url(forResource: "sermonclip", withExtension: "json") else { return nil }
+        return try GoogleDesktopConfiguration.parse(Data(contentsOf: url))
+    }
+
+    var configuredClientID: String { configuration?.client_id ?? "" }
+    var configuredClientSecret: String { configuration?.client_secret ?? "" }
 
     private func read<T: Decodable>(_ key: String) throws -> T? {
         guard let data = try secrets.read(key) else { return nil }
@@ -157,20 +175,44 @@ final class YouTubeStore: ObservableObject {
         return []
     }
 
-    func importConfiguration(_ url: URL) {
-        guard !busy, job == nil else { report("Finish or discard the pending upload before replacing the configuration.", in: .account, tone: .warning); return }
+    func configurationValuesFromJSON(_ url: URL) -> (clientID: String, clientSecret: String)? {
+        guard !busy, job == nil else { report("Finish or discard the pending upload before replacing the configuration.", in: .account, tone: .warning); return nil }
         let scoped = url.startAccessingSecurityScopedResource()
         defer { if scoped { url.stopAccessingSecurityScopedResource() } }
         do {
             let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
             guard size < 100_000 else { throw YouTubeFailure(message: "This is not a Google Desktop app configuration file.") }
             let parsed = try GoogleDesktopConfiguration.parse(Data(contentsOf: url))
-            try secrets.write(nil, key: "connection")
-            connection = nil
-            try save(parsed, "configuration")
-            configuration = parsed; configured = true
-            report("Google configuration saved in Keychain. Connect your YouTube channel next.", in: .account, tone: .normal)
+            return (parsed.client_id, parsed.client_secret)
+        } catch {
+            report(error.localizedDescription, in: .account, tone: .error)
+            return nil
+        }
+    }
+
+    func saveManualConfiguration(clientID: String, clientSecret: String) {
+        guard !busy, job == nil else { report("Finish or discard the pending upload before replacing the configuration.", in: .account, tone: .warning); return }
+        do {
+            try saveConfiguration(GoogleDesktopConfiguration.make(clientID: clientID, clientSecret: clientSecret))
         } catch { report(error.localizedDescription, in: .account, tone: .error) }
+    }
+
+    func removeSavedConfiguration() {
+        guard !busy, job == nil else { report("Finish or discard the pending upload before removing the configuration.", in: .account, tone: .warning); return }
+        do {
+            try secrets.write(nil, key: "connection")
+            try secrets.write(nil, key: "configuration")
+            configuration = nil; connection = nil; configured = false; enabled = false
+            report("Saved Google credentials removed from this Mac.", in: .account, tone: .normal)
+        } catch { report(error.localizedDescription, in: .account, tone: .error) }
+    }
+
+    private func saveConfiguration(_ parsed: GoogleDesktopConfiguration) throws {
+        try secrets.write(nil, key: "connection")
+        connection = nil
+        try save(parsed, "configuration")
+        configuration = parsed; configured = true
+        report("Google configuration saved in Keychain. Connect your YouTube channel next.", in: .account, tone: .normal)
     }
 
     func connect() {
@@ -294,7 +336,7 @@ final class YouTubeStore: ObservableObject {
             try secrets.write(nil, key: "uploadJob")
             job = nil
             report("Retry record discarded. Local files and any video already on YouTube were not deleted.", in: .upload, tone: .normal, dismissAfterSeconds: 10)
-            report(connection != nil ? "YouTube connected." : configured ? "Configuration imported. Connect your channel." : "Import your Google Desktop app JSON to begin.", in: .account, tone: .normal)
+            report(connection != nil ? "YouTube connected." : configured ? "Google configuration ready. Connect your channel." : "Connect your YouTube channel to begin.", in: .account, tone: .normal)
         }
         catch { report(error.localizedDescription, in: .upload, tone: .error) }
     }
