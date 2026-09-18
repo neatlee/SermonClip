@@ -73,7 +73,7 @@ h3 { margin-bottom:9px; font-size:20px; letter-spacing:-.02em; }
 .screen-caption { padding:19px 10px; }
 .screen-caption h3 { margin-bottom:7px; }
 .screen-caption p { margin-bottom:0; color:var(--muted); }
-.lightbox { width:min(1000px,calc(100% - 40px)); max-width:none; padding:0 48px; border:0; outline:none; background:transparent; }
+.lightbox { width:min(1000px,calc(100% - 40px)); max-width:none; padding:0 48px; overflow:visible; border:0; outline:none; background:transparent; }
 .lightbox:focus,.lightbox:focus-visible { outline:none; }
 .lightbox::backdrop { background:rgba(0,0,0,.72); }
 .lightbox img { display:block; width:100%; height:auto; max-height:calc(100vh - 70px); object-fit:contain; }
