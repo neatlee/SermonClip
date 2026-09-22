@@ -1,6 +1,6 @@
 # SermonClip Privacy Policy
 
-**Effective date: September 17, 2026**
+**Effective date: September 21, 2026**
 
 SermonClip is a local-first macOS application used to prepare church-service
 videos, subtitles, and audio files. This policy explains what information the
@@ -15,6 +15,19 @@ chooses to upload an export to YouTube.
 
 Google authorization tokens are stored in the macOS Keychain. They are used to
 maintain the authorized YouTube connection and are not stored in project files.
+
+## How Google user data is protected
+
+Security procedures are in place to protect the confidentiality of Google user
+data. SermonClip stores OAuth access and refresh tokens only in the macOS
+Keychain, which provides macOS-managed access controls and encryption at rest;
+tokens are not written to project files, logs, or the app's preferences.
+Requests containing Google user data are sent only to Google's HTTPS endpoints,
+which encrypt data in transit using TLS. The app requests only the YouTube
+permissions needed for its features, keeps tokens in memory only while they are
+needed, and does not expose Google user data to other apps or sell it to third
+parties. Users can disconnect the account in YouTube Settings, which removes
+the locally stored authorization from the Keychain.
 
 ## Google and YouTube access
 
