@@ -1,6 +1,6 @@
 # SermonClip Privacy Policy
 
-**Effective date: September 21, 2026**
+**Effective date: September 29, 2026**
 
 SermonClip is a local-first macOS application used to prepare church-service
 videos, subtitles, and audio files. This policy explains what information the
@@ -50,8 +50,33 @@ thumbnail settings before an upload begins.
 
 ## Analytics and tracking
 
-SermonClip does not include advertising, third-party analytics, or cross-site
-tracking.
+The app does not include advertising, cross-site tracking, or third-party app
+analytics. Sharing export diagnostics with SermonClip is optional and is off
+until the user chooses to enable it. The choice does not affect app features,
+export limits, or account access, and can be changed at any time in My Account.
+
+When enabled, SermonClip sends a record only after an export file has been
+successfully created. It includes numerical counts for MP4, MP3, and SRT files;
+technical source-format details such as container, codecs, resolution, frame
+rate, pixel format, color properties, and audio format; the MP4 export strategy;
+whether bumpers or crossfades were used; the app version; and the time of the
+export. This helps us improve format compatibility and diagnose export issues.
+
+The app never sends the selected media, audio, subtitle contents, file names,
+file paths, video titles, or embedded media tags as part of this feature. A
+random app-install identifier is used to honor the preference and remove that
+installation's records; the server stores only a one-way hash of it, not a
+hardware identifier or device name. If the user is signed in, export records
+are associated with that account so they can help with support; while signed
+out, records are anonymous. SermonClip does not include the user's IP address
+in these analytics records, though the hosting provider may process connection
+metadata to operate and secure the service.
+
+Turning sharing off stops future submissions from the app and deletes the
+export records previously shared by that app installation, including records
+associated with accounts used on it. Export diagnostics are stored by SermonClip
+while sharing remains enabled, for product improvement and support; they are
+not sold or used for advertising.
 
 ## Retention and deletion
 
