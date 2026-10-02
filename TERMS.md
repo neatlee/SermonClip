@@ -65,4 +65,4 @@ You may stop using SermonClip at any time by deleting the application.
 
 ## 9. Contact
 
-Questions about these terms can be directed to mike@stoneycreekbaptist.com.
+Questions about these terms can be directed to mike@neatlee.com.

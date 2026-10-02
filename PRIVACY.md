@@ -89,4 +89,4 @@ YouTube; those remain under the user's control.
 ## Changes and contact
 
 This policy may be updated when SermonClip's data practices change. Questions
-about this policy can be directed to mike@stoneycreekbaptist.com.
+about this policy can be directed to mike@neatlee.com.
